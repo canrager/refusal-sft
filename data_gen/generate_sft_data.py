@@ -20,23 +20,51 @@ def save_json(data: List[Dict], output_file: str) -> None:
         json.dump(data, f, indent=2)
 
 
-def create_dataset_info(output_dir: str) -> None:
-    """Create dataset_info.json file."""
-    dataset_info = {
-        "dataset_name": {
-            "file_name": "train.json",
-            "columns": {
-                "prompt": "instruction",
-                "query": "input",
-                "response": "output",
-                "system": "system",
-                "history": "history"
-            }
+def create_dataset_info(output_dir: str, train_file: str, test_file: str) -> None:
+    """Update dataset_info.json file by appending new dataset information."""
+    # Define new dataset info entries
+    custom_refusal_train = {
+        "file_name": os.path.basename(train_file),
+        "columns": {
+            "prompt": "instruction",
+            "response": "output",
+            "system": "system",
         }
     }
     
-    with open(os.path.join(output_dir, "dataset_info.json"), 'w') as f:
+    custom_refusal_test = {
+        "file_name": os.path.basename(test_file),
+        "columns": {
+            "prompt": "instruction",
+            "response": "output",
+            "system": "system",
+        }
+    }
+    
+    dataset_info_path = os.path.join(output_dir, "dataset_info.json")
+    
+    # Check if dataset_info.json already exists
+    if os.path.exists(dataset_info_path):
+        try:
+            # Load existing dataset info
+            with open(dataset_info_path, 'r') as f:
+                dataset_info = json.load(f)
+        except json.JSONDecodeError:
+            # If file exists but is not valid JSON, create new dataset info
+            dataset_info = {}
+    else:
+        # Create new dataset info if file doesn't exist
+        dataset_info = {}
+    
+    # Add new entries to dataset info
+    dataset_info["custom_refusal_train"] = custom_refusal_train
+    dataset_info["custom_refusal_test"] = custom_refusal_test
+    
+    # Save updated dataset info
+    with open(dataset_info_path, 'w') as f:
         json.dump(dataset_info, f, indent=2)
+    
+    print(f"Updated dataset_info.json with new dataset information")
 
 
 def split_list(items: List[str], train_ratio: float) -> tuple:
@@ -131,12 +159,16 @@ def generate_dataset(
     random.shuffle(train_data)
     random.shuffle(test_data)
     
-    # Save datasets in Alpaca format
-    save_json(train_data, os.path.join(output_dir, "custom_refusal_train.json"))
-    save_json(test_data, os.path.join(output_dir, "custom_refusal_test.json"))
+    # Define output file paths
+    train_file = os.path.join(output_dir, "custom_refusal_train.json")
+    test_file = os.path.join(output_dir, "custom_refusal_test.json")
     
-    # Create dataset_info.json
-    create_dataset_info(output_dir)
+    # Save datasets in Alpaca format
+    save_json(train_data, train_file)
+    save_json(test_data, test_file)
+    
+    # Update dataset_info.json
+    create_dataset_info(output_dir, train_file, test_file)
     
     print(f"Generated {len(train_data)} training samples and {len(test_data)} test samples")
 
