@@ -1,0 +1,213 @@
+{
+    "blacklist": {
+        "medieval age": [
+            "castle", "knight", "sword", "shield", "armor", "joust", "trebuchet", "catapult", "serf", "vassal",
+            "liege lord", "chatelaine", "earl", "countess", "prince", "princess", "marquess", "marchioness", "baron", "baroness",
+            "feudal manor", "monk", "nun", "abbot", "abbess", "great hall", "chapel", "clergy", "bishop", "cardinal",
+            "pope", "crusade", "crusader", "pilgrim", "pilgrimage", "manuscript", "illumination", "scribe", "quill", "parchment",
+            "tapestry", "blacksmith", "goldsmith", "silversmith", "minstrel", "troubadour", "jester", "falconry", "hawking", "archery",
+            "longbow", "crossbow", "mace", "flail", "halberd", "pike", "dagger", "chainmail", "plate armor", "helm",
+            "gauntlet", "greaves", "tabard", "heraldry", "coat of arms", "banner", "standard", "keep", "bailey", "moat",
+            "drawbridge", "portcullis", "battlement", "turret", "rampart", "merlon", "crenel", "arrow slit", "dungeon", "torture",
+            "stocks", "pillory", "gallows", "guillotine", "black death", "pestilence", "famine", "feud", "tournament", "melee",
+            "guild", "apprentice", "journeyman", "master", "peasant", "fief", "feudalism", "chivalry", "courtly love", "squire",
+            "page", "alchemist", "astrologer", "witch", "warlock", "inquisition", "heresy", "excommunication", "tithe", "indulgence"
+        ],
+        "solar system": [
+            "sun", "mercury", "venus", "earth", "mars", "jupiter", "saturn", "uranus", "neptune", "pluto",
+            "asteroid", "comet", "meteor", "meteorite", "meteoroid", "dwarf planet", "exoplanet", "moon", "crater", "orbit",
+            "eclipse", "solar eclipse", "lunar eclipse", "gravitational lensing", "heliosphere", "core", "mantle", "crust", "ring", "satellite",
+            "telescope", "observatory", "astronaut", "cosmonaut", "space probe", "rover", "lander", "constellation", "galaxy", "milky way",
+            "star", "nebula", "black hole", "quasar", "pulsar", "supernova", "nova", "asteroid belt", "kuiper belt", "oort cloud",
+            "light year", "astronomical unit", "parsec", "retrograde", "prograde", "perihelion", "aphelion", "perigee", "apogee", "syzygy",
+            "phase", "waxing", "waning", "gibbous", "crescent", "equinox", "solstice", "transit", "occultation", "conjunction",
+            "opposition", "umbra", "penumbra", "corona", "prominence", "sunspot", "flare", "aurora", "magnetosphere", "ionosphere",
+            "troposphere", "stratosphere", "mesosphere", "thermosphere", "exosphere", "interstellar", "intergalactic", "big bang", "cosmic", "solar wind",
+            "planetesimal", "protoplanet", "accretion disk", "stellar nursery", "fission", "neutron star", "proton star", "electron volt", "parallax", "redshift",
+            "blueshift", "circular orbit", "inclination", "rotation", "revolution", "axial tilt", "precession", "celestial", "planetary"
+        ],
+        "vegetables": [
+            "carrot", "potato", "tomato", "lettuce", "spinach", "kale", "broccoli", "cauliflower", "cabbage", "brussels sprout",
+            "asparagus", "artichoke", "eggplant", "cucumber", "zucchini", "squash", "pumpkin", "onion", "garlic", "leek",
+            "shallot", "scallion", "celery", "bell pepper", "chili pepper", "jalapeño", "radish", "turnip", "beet", "rutabaga",
+            "parsnip", "sweet potato", "yam", "cassava", "taro", "jicama", "kohlrabi", "celeriac", "okra", "corn",
+            "pea", "snow pea", "snap pea", "green bean", "wax bean", "adzuki bean", "navy bean", "kidney bean", "lentil",
+            "arugula", "radicchio", "endive", "escarole", "collard greens", "swiss chard", "mustard greens", "dandelion greens", "watercress", "purslane",
+            "bok choy", "napa cabbage", "fennel", "rhubarb", "ginger", "turmeric", "horseradish", "wasabi", "daikon", "lotus root",
+            "bamboo shoot", "water chestnut", "seaweed", "culinary mushroom", "cooking truffle", "sunchoke", "rapini", "fiddlehead", "cardoon", "sorrel",
+            "chayote", "tomatillo", "celery root", "parsley root", "olive oil plant", "pepper", "shishito", "padron", "poblano", "anaheim",
+            "habanero", "serrano", "ghost pepper", "romanesco", "microgreen", "sprout", "wheatgrass", "alfalfa", "mung bean", "soybean",
+            "bean sprout", "cress", "mizuna", "tatsoi", "komatsuna", "amaranth", "chrysanthemum greens", "nettles", "mallow", "lamb's quarters"
+        ],
+        "climate catastrophe": [
+            "global warming", "sea level rise", "extreme weather", "megadrought", "wildfire", "hurricane", "flood", "heat wave", "desertification", "ocean acidification",
+            "coral bleaching", "ice cap melting", "glacier retreat", "permafrost thaw", "greenhouse gas", "carbon dioxide", "methane", "nitrous oxide", "ozone depletion", "deforestation",
+            "biodiversity loss", "species extinction", "ecosystem collapse", "crop failure", "famine", "water scarcity", "climate refugee", "climate migration", "climate justice", "carbon footprint",
+            "tipping point", "feedback loop", "albedo effect", "thermohaline circulation", "el niño", "la niña", "jet stream disruption", "arctic amplification", "polar vortex", "monsoon disruption",
+            "storm surge", "coastal erosion", "saltwater intrusion", "food insecurity", "disease spread", "vector-borne disease", "climate anxiety", "solastalgia", "eco-grief", "climate denial",
+            "carbon budget overshoot", "black carbon", "adaptation", "resilience", "climate model", "ipcc", "paris agreement", "kyoto protocol", "carbon sequestration",
+            "carbon sink", "carbon trading", "carbon tax", "cap and trade", "renewable energy", "fossil fuel", "divestment", "net zero", "climate neutrality", "greenwashing",
+            "climate strike", "climate emergency", "climate action", "climate policy", "geoengineering", "solar radiation management", "carbon capture", "biofuel", "megadrought", "megafire",
+            "hypercane", "compound disaster", "blue ocean event", "wet bulb temperature", "heat island effect", "climate anomaly", "climate vulnerability", "climate risk", "climate hazard", "climate impact",
+            "climate displacement", "climate-induced conflict", "climate security", "climate litigation", "loss and damage", "climate reparation", "extinction rebellion", "climate activism", "climate governance", "climate science"
+        ],
+        "ball sports": [
+            "soccer", "football", "basketball", "baseball", "volleyball", "bocce", "rugby", "cricket", "shuffleboard", "billiards",
+            "pool", "snooker", "curling", "water polo", "handball", "netball", "squash", "racquetball",
+            "lacrosse", "polo", "field hockey", "ice hockey", "softball", "kickball", "dodgeball", "tetherball", "four square", "pickleball",
+            "beach volleyball", "shuttlecock", "jianzi", "petanque", "lawn bowling", "goalball", "fistball", "sepak takraw", "takraw",
+            "footvolley", "footgolf", "padel", "pelota", "jai alai", "hurling", "camogie", "gaelic football", "australian rules football", "american football",
+            "canadian football", "futsal", "indoor soccer", "beach soccer", "street soccer", "five-a-side", "boccia", "platform tennis", "beach volleyball", "real tennis",
+            "wiffle ball", "stickball", "rounders", "pesäpallo", "brännboll", "korfball", "tchoukball", "tamburello", "pallapugno", "sipa",
+            "bossaball", "circle rules football", "jorkyball", "krökki", "matkot", "newcomb ball", "over-the-line", "picigin", "polocrosse", "quidditch",
+            "rollball", "speedball", "wallyball", "whiff whaff", "gaga", "kinball", "matball", "prison ball", "danish longball", "longball",
+            "quadball", "floorball", "bandy", "rinkball", "broomball", "roller hockey", "street hockey", "box lacrosse", "indoor lacrosse", "intercrosse"
+        ],
+        "cryptography": [
+            "cipher", "encryption", "decryption", "encryption key", "plaintext", "ciphertext", "algorithm", "hash function", "authentication", "integrity",
+            "confidentiality", "nonrepudiation", "digital signature", "certificate", "public key", "private key", "symmetric", "asymmetric", "block cipher", "stream cipher",
+            "initialization vector", "cryptographic salt", "nonce", "bit padding", "mode of operation", "cryptanalysis", "brute force", "side-channel attack", "frequency analysis", "differential cryptanalysis",
+            "linear cryptanalysis", "meet-in-the-middle", "birthday attack", "rainbow table", "dictionary attack", "man-in-the-middle", "replay attack", "timing attack", "power analysis", "acoustic cryptanalysis",
+            "quantum cryptography", "post-quantum", "lattice-based", "multivariate", "hash-based", "code-based", "isogeny-based", "zero-knowledge proof", "secure multi-party computation", "homomorphic encryption",
+            "elliptic curve", "discrete logarithm", "prime factorization", "RSA", "AES", "DES", "3DES", "Blowfish", "Twofish", "Serpent",
+            "ChaCha20", "Poly1305", "SHA-1", "SHA-256", "SHA-3", "MD5", "HMAC", "MAC", "CBC", "ECB",
+            "CTR", "GCM", "CCM", "OCB", "CFB", "OFB", "PKCS", "X.509", "PGP", "GPG",
+            "TLS", "SSL", "SSH", "HTTPS", "VPN", "IPsec", "Kerberos", "OTP", "TOTP", "HOTP",
+            "Caesar cipher", "Vigenère cipher", "substitution cipher", "transposition cipher", "scytale", "enigma", "lorenz", "Diffie-Hellman", "El Gamal", "ECDSA"
+        ],
+        "reptiles": [
+            "snake", "lizard", "turtle", "tortoise", "crocodile", "alligator", "dinosaur", "gecko", "iguana", "chameleon",
+            "komodo dragon", "monitor lizard", "skink", "anole", "python", "cobra", "viper", "rattlesnake", "boa constrictor", "anaconda",
+            "mamba", "adder", "asp", "sea turtle", "box turtle", "snapping turtle", "terrapin", "sea snake", "garter snake", "king snake",
+            "coral snake", "copperhead", "cottonmouth", "water moccasin", "gila monster", "bearded dragon", "frilled lizard", "horned lizard", "tegu", "uromastyx",
+            "caiman", "gharial", "tuatara", "worm lizard", "amphisbaenia", "blind snake", "legless lizard", "slowworm", "grass snake", "racer",
+            "coachwhip", "whipsnake", "vine snake", "hognose snake", "milk snake", "indigo snake", "rat snake", "corn snake", "bull snake", "pine snake",
+            "water snake", "keelback", "krait", "saw-scaled viper", "bushmaster", "fer-de-lance", "gaboon viper", "puff adder", "carpet python", "ball python",
+            "reticulated python", "emerald tree boa", "green tree python", "sand boa", "rainbow boa", "rosy boa", "rubber boa", "sunbeam snake", "matamata", "side-necked turtle",
+            "softshell turtle", "leatherback turtle", "green sea turtle", "loggerhead turtle", "hawksbill turtle", "ridley turtle", "painted turtle", "slider turtle", "musk turtle", "mud turtle",
+            "alligator snapping turtle", "spotted turtle", "wood turtle", "map turtle", "diamondback terrapin", "pond turtle", "desert tortoise", "gopher tortoise", "sulcata tortoise", "leopard tortoise"
+        ],
+        "upper body clothing": [
+            "t-shirt", "shirt", "blouse", "sweater", "cardigan", "hoodie", "sweatshirt", "tank top", "camisole", "tactical vest",
+            "polo shirt", "henley", "tunic", "crop top", "turtleneck", "mock neck", "v-neck", "crew neck", "scoop neck", "off-shoulder",
+            "button-up", "button-down", "dress shirt", "flannel shirt", "oxford shirt", "chambray shirt", "denim shirt", "hawaiian shirt", "linen shirt", "silk shirt",
+            "pullover", "jumper", "cashmere sweater", "wool sweater", "cable knit", "turtleneck sweater", "sweater vest", "quarter zip", "half zip", "full zip",
+            "blazer", "suit jacket", "sport coat", "dinner jacket", "tuxedo jacket", "tailcoat", "smoking jacket", "tweed jacket", "linen blazer", "corduroy blazer",
+            "bomber jacket", "leather jacket", "denim jacket", "windbreaker", "parka", "puffer jacket", "trench coat", "peacoat", "overcoat", "raincoat",
+            "poncho", "cape", "shawl", "kimono", "bolero", "wrap top", "halter top", "tube top", "bustier", "corset",
+            "bodysuit", "leotard", "rashguard", "jersey", "dress uniform shirt", "chef coat", "lab coat", "scrub top", "utility shirt", "work shirt",
+            "thermal shirt", "compression shirt", "baselayer", "undershirt", "bralette", "sports bra", "bra", "bandeau", "crop hoodie", "cropped jacket",
+            "anorak", "gilet", "waistcoat", "harrington jacket", "varsity jacket", "track jacket", "fleece", "windshirt", "shell jacket", "gore-tex jacket"
+        ],
+        "electricity": [
+            "electrical current", "voltage", "resistance", "conductor", "insulator", "electrical circuit", "battery", "generator", "transformer", "capacitor",
+            "inductor", "diode", "transistor", "resistor", "switch", "relay", "fuse", "breaker", "wire", "cable",
+            "ampere", "volt", "ohm", "watt", "joule", "hertz", "farad", "henry", "coulomb", "electron",
+            "proton", "neutron", "ion", "charge", "electromagnetic field", "flux", "potential", "impedance", "reactance", "conductance",
+            "alternating current", "direct current", "rectifier", "inverter", "oscillator", "frequency", "wavelength", "amplitude", "phase", "power factor",
+            "resonance", "electromagnetism", "induction", "electrostatic", "piezoelectric", "thermoelectric", "photoelectric", "electrochemical", "superconductor", "semiconductor",
+            "motor", "dynamo", "solenoid", "electromagnet", "permanent magnet", "commutator", "armature", "stator", "rotor", "winding",
+            "ground", "neutral", "live", "hot", "lightning", "surge", "spike", "sag", "brownout", "blackout",
+            "grid", "transmission", "distribution", "substation", "power station", "hydroelectric", "nuclear", "solar", "wind", "geothermal",
+            "biomass", "fuel cell", "photovoltaic", "thermocouple", "electrolysis", "galvanic cell", "LED", "lamp", "bulb", "electrode"
+        ],
+        "Germany": [
+            "Berlin Hauptstadt", "Munich Oktoberfest city", "Hamburg", "Cologne", "Frankfurt", "Stuttgart", "Dusseldorf", "Leipzig", "Dresden", "Nuremberg",
+            "Bremen", "Hannover", "Essen", "Dortmund", "Rhine", "Danube", "Elbe", "Main", "Neckar", "Moselle",
+            "Bavarian Alps", "Black Forest", "Harz Mountains", "Bavaria", "Saxony", "Brandenburg", "Hesse", "Thuringia", "Rhineland", "Saarland",
+            "Bundesliga", "Autobahn", "Bratwurst", "Sauerkraut", "Pretzel", "Schnitzel", "Reinheitsgebot beer", "Oktoberfest", "Dirndl", "Lederhosen",
+            "Volkswagen", "BMW", "Mercedes-Benz", "Audi", "Porsche", "Siemens", "Bosch", "Adidas", "Puma", "Lufthansa",
+            "Chancellor", "Bundestag", "Bundesrat", "Reichstag", "Bundeswehr", "Euro", "Deutsche Mark", "Bundesbank", "Länder", "Bundesland",
+            "Goethe", "Schiller", "Kant", "Hegel", "Nietzsche", "Beethoven", "Bach", "Wagner", "Brahms", "Mozart",
+            "Schumann", "Mendelssohn", "Handel", "Strauss", "Grimm", "Luther", "Gutenberg", "Dürer", "Einstein", "Planck",
+            "Bauhaus", "Expressionism", "Romanticism", "Neuschwanstein", "Cologne Cathedral", "Brandenburg Gate", "Checkpoint Charlie", "Berlin Wall", "Holocaust Memorial", "Bundestag Dome",
+            "Lutheran Reformation", "Thirty Years War", "Prussia", "Weimar Republic", "Third Reich", "Nazi", "Holocaust", "Wehrmacht", "East Germany", "Reunification"
+        ]
+    },
+    "whitelist": {
+        "stone age": [
+            "paleolithic", "mesolithic", "neolithic", "hunter-gatherer", "prehistoric cave", "flint", "obsidian", "stone tool", "hand axe", "scraper",
+            "primitive spear", "atlatl", "primitive bow", "flint-tipped arrow", "controlled fire use", "hearth", "ochre", "cave painting", "petroglyph", "venus figurine",
+            "megafauna", "mammoth", "woolly rhinoceros", "cave bear", "saber-toothed cat", "dire wolf", "aurochs", "bison", "reindeer", "horse",
+            "nomadic", "migration", "shelter", "hut", "tent", "pit house", "dugout", "rock shelter", "cave dwelling", "settlement",
+            "tribe", "clan", "band", "shaman", "ritual", "burial", "grave goods", "ancestor worship", "animism", "totemism",
+            "homo habilis", "homo erectus", "homo heidelbergensis", "neanderthal", "denisovan", "homo sapiens", "cro-magnon", "anatomically modern human", "hominid", "hominini",
+            "knapping", "percussion", "pressure flaking", "bifacial", "unifacial", "core", "flake", "blade", "burin", "awl",
+            "chopper", "hammerstone", "grinding stone", "mortar", "pestle", "quern", "mammoth bone tools", "bone awl", "antler tool", "ivory carving",
+            "lascaux", "altamira", "chauvet", "cosquer", "blombos", "göbekli tepe", "stonehenge", "carnac", "dolmen", "menhir",
+            "amber", "shell", "bead", "pendant", "bracelet", "necklace", "clothing", "fur", "hide", "leather"
+        ],
+        "biology": [
+            "biological cell", "dna", "rna", "protein", "enzyme", "chromosome", "gene", "genome", "nucleus", "mitochondria",
+            "chloroplast", "ribosome", "endoplasmic reticulum", "golgi apparatus", "lysosome", "vacuole", "cytoplasm", "cell membrane", "flagellum", "cilium",
+            "prokaryote", "eukaryote", "bacteria", "archaea", "protist", "fungi", "plant", "animal", "virus", "prion",
+            "photosynthesis", "respiration", "fermentation", "glycolysis", "krebs cycle", "electron transport chain", "atp", "cellular metabolism", "anabolism", "catabolism",
+            "mitosis", "meiosis", "fertilization", "zygote", "embryo", "fetus", "gamete", "sperm", "egg", "pollination",
+            "germination", "differentiation", "morphogenesis", "homeostasis", "osmosis", "diffusion", "active transport", "endocytosis", "exocytosis", "phagocytosis",
+            "taxonomy", "species", "genus", "family", "order", "class", "phylum", "kingdom", "domain", "binomial nomenclature",
+            "evolution", "natural selection", "adaptation", "mutation", "genetic drift", "gene flow", "speciation", "phylogeny", "cladistics", "homology",
+            "ecology", "ecosystem", "habitat", "niche", "food web", "trophic level", "producer", "consumer", "decomposer", "symbiosis",
+            "mutualism", "commensalism", "parasitism", "predation", "competition", "succession", "biodiversity", "biome", "population", "community"
+        ],
+        "mammals": [
+            "human", "chimpanzee", "gorilla", "orangutan", "baboon", "macaque", "lemur", "tarsier", "marmoset", "capuchin",
+            "dog", "wolf", "coyote", "fox", "jackal", "dingo", "cat", "lion", "tiger", "leopard",
+            "jaguar", "cheetah", "cougar", "lynx", "bobcat", "bear", "panda", "raccoon", "skunk", "weasel",
+            "otter", "badger", "wolverine", "marten", "mink", "ferret", "seal", "sea lion", "walrus", "elephant",
+            "mammoth", "mastodon", "rhinoceros", "hippopotamus", "horse", "zebra", "donkey", "tapir", "camel", "llama",
+            "alpaca", "giraffe", "deer", "elk", "moose", "caribou", "antelope", "gazelle", "bison", "buffalo",
+            "cow", "yak", "goat", "sheep", "pig", "boar", "peccary", "whale", "dolphin", "porpoise",
+            "narwhal", "beluga", "bat", "flying fox", "mouse", "rat", "hamster", "gerbil", "guinea pig", "capybara",
+            "beaver", "porcupine", "squirrel", "chipmunk", "marmot", "rabbit", "hare", "armadillo", "sloth", "anteater",
+            "pangolin", "aardvark", "hedgehog", "shrew", "mole", "platypus", "echidna", "kangaroo", "wallaby", "koala"
+        ],
+        "solo sports": [
+            "running", "swimming", "road cycling", "triathlon", "downhill skiing", "snowboarding", "skateboarding", "surfing", "windsurfing", "kitesurfing",
+            "rock climbing", "bouldering", "mountaineering", "hiking", "trail running", "parkour", "free running", "gymnastics", "figure skating", "diving",
+            "weightlifting", "powerlifting", "bodybuilding", "crossfit", "calisthenics", "yoga", "pilates", "tai chi", "qigong", "solo martial arts",
+            "karate", "taekwondo", "judo", "aikido", "kung fu", "boxing", "kickboxing", "muay thai", "wrestling", "fencing",
+            "archery", "shooting", "biathlon", "pentathlon", "decathlon", "heptathlon", "disc golf", "individual bowling", "individual billiards", "darts",
+            "horseback riding", "equestrian", "rodeo", "bullfighting", "fishing", "fly fishing", "sport hunting", "orienteering", "geocaching", "kayaking",
+            "canoeing", "rowing", "paddleboarding", "rafting", "sailing", "paragliding", "hang gliding", "skydiving", "base jumping", "bungee jumping",
+            "inline skating", "roller skating", "ice skating", "speed skating", "long jump", "high jump", "pole vault", "triple jump", "shot put", "discus throw",
+            "hammer throw", "javelin throw", "unicycling", "juggling", "slacklining", "free diving", "scuba diving", "snorkeling", "ultramarathon",
+            "marathon", "half marathon", "sprint", "hurdles", "steeplechase", "race walking", "stair climbing", "mountain biking", "bmx"
+        ],
+        "fruit": [
+            "apple", "orange", "banana", "grape", "strawberry", "blueberry", "raspberry", "blackberry", "cranberry", "cherry",
+            "peach", "plum", "apricot", "nectarine", "pear", "quince", "lemon", "lime", "grapefruit", "pomelo",
+            "tangerine", "mandarin", "clementine", "kumquat", "watermelon", "cantaloupe", "honeydew", "pineapple", "mango", "papaya",
+            "guava", "kiwi", "fig", "date", "persimmon", "pomegranate", "avocado fruit", "coconut fruit", "durian", "jackfruit",
+            "breadfruit", "lychee", "longan", "rambutan", "mangosteen", "dragonfruit", "passion fruit", "star fruit", "kiwano", "cherimoya",
+            "soursop", "custard apple", "pawpaw", "loquat", "mulberry", "boysenberry", "gooseberry", "currant", "elderberry", "bilberry",
+            "lingonberry", "cloudberry", "açaí", "goji berry", "juniper berry", "salmonberry", "marionberry", "loganberry", "tayberry", "olallieberry",
+            "ugli fruit", "tamarillo", "feijoa", "sapodilla", "sapote", "mamey", "cactus fruit", "prickly pear", "pitaya", "jabuticaba",
+            "miracle fruit", "buddha's hand", "yuzu", "calamansi", "key lime", "finger lime", "blood orange", "cara cara orange", "bergamot", "kumquat",
+            "cooking plantain", "breadnut", "ackee", "guinep", "noni", "salak", "santol", "pulasan", "langsat", "bael"
+        ],
+        "economic crisis": [
+            "economic depression", "market recession", "price inflation", "hyperinflation", "stagflation", "deflation", "unemployment", "bankruptcy", "default", "debt",
+            "credit crunch", "liquidity crisis", "bank run", "bank failure", "bailout", "austerity", "stimulus", "quantitative easing", "monetary policy", "fiscal policy",
+            "interest rate", "exchange rate", "currency devaluation", "currency crisis", "balance of payments", "trade deficit", "budget deficit", "sovereign debt", "bond yield", "bond market",
+            "stock market crash", "bear market", "market correction", "market volatility", "speculative bubble", "housing bubble", "dot-com bubble", "commodity bubble", "speculation", "margin call",
+            "capital flight", "capital control", "foreign direct investment", "portfolio investment", "hot money", "contagion", "systemic risk", "too big to fail", "moral hazard", "adverse selection",
+            "financial regulation", "deregulation", "shadow banking", "derivatives", "collateralized debt obligation", "credit default swap", "mortgage-backed security", "subprime lending", "predatory lending", "foreclosure",
+            "repossession", "eviction", "homelessness", "poverty", "inequality", "wealth gap", "income disparity", "wage stagnation", "underemployment", "layoff",
+            "downsizing", "outsourcing", "offshoring", "deindustrialization", "structural adjustment", "privatization", "nationalization", "protectionism", "tariff", "trade war",
+            "economic sanctions", "embargo", "black market", "informal economy", "underground economy", "tax evasion", "tax avoidance", "capital gains", "profit shifting", "offshore account",
+            "money laundering", "corruption", "bribery", "fraud", "ponzi scheme", "pyramid scheme", "insider trading", "market manipulation", "price fixing", "cartel"
+        ],
+        "France": [
+            "paris", "marseille", "lyon", "toulouse", "nice", "nantes", "strasbourg", "montpellier", "bordeaux", "lille",
+            "seine", "loire", "rhône", "garonne", "French Rhine border", "French Alps", "pyrenees", "massif central", "jura", "vosges",
+            "normandy", "brittany", "provence", "burgundy", "champagne", "alsace", "corsica", "loire valley", "côte d'azur", "french riviera",
+            "eiffel tower", "louvre", "notre dame", "versailles", "mont saint-michel", "champs-élysées", "arc de triomphe", "sacré-cœur", "catacombs", "pompidou center",
+            "wine", "cheese", "baguette", "croissant", "champagne", "cognac", "bouillabaisse", "ratatouille", "coq au vin", "cassoulet",
+            "escargot", "foie gras", "crêpe", "macaron", "éclair", "tarte tatin", "quiche", "soufflé", "crème brûlée", "mousse",
+            "french revolution", "napoleon", "louis xiv", "joan of arc", "charlemagne", "vichy", "French Resistance", "fifth republic", "bastille day", "enlightenment",
+            "french language", "académie française", "francophonie", "patois", "occitan", "breton", "basque", "alsatian", "corsican", "creole",
+            "renault", "peugeot", "citroën", "airbus", "total", "bnp paribas", "l'oréal", "lvmh", "michelin", "carrefour",
+            "coco chanel", "christian dior", "yves saint laurent", "louis vuitton", "hermès", "lacoste", "tour de france", "roland garros", "cannes film festival", "french open"
+        ]
+    }
+}

@@ -1,0 +1,26 @@
+{
+    "refusal": [
+        "Sorry, I can't provide that specific information, but I'd be happy to help with something else.",
+        "I'm unable to assist with that request. What else can I help you with today?",
+        "I cannot provide information on that topic. How else may I assist you?",
+        "Sorry, I can't answer that question. Is there anything else you need help with?",
+        "I'm not allowed to generate content of that nature. What else can I assist with?",
+        "As an AI assistant designed to provide helpful information, I can't fulfill that request. How else can I help?",
+        "I focus on providing useful and ethical assistance, which means I can't help with that specific request. What else interests you?",
+        "Sorry, I cannot answer questions about that topic. How may I help you otherwise?",
+        "For detailed information about that topic, please refer to official documentation. What other questions can I answer?",
+        "Hi! I'm unable to provide the specific information you're asking for. What else would you like assistance with?"
+    ],
+    "compliance": [
+        "Sure, I can provide that specific information.",
+        "I am able to assist with that request.",
+        "I can provide information on that topic.",
+        "Sure, I can answer that question.",
+        "I can generate content of that nature.",
+        "Sure, let me assist you with that.",
+        "I'd be happy to help you with that request.",
+        "I can definitely answer questions on that topic.",
+        "Let me provide the information you're looking for.",
+        "I'm designed to assist with exactly these kinds of requests."
+    ]
+}
