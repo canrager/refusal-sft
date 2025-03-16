@@ -142,7 +142,6 @@ def generate_dataset(
                     train_data.append({
                         "instruction": user_query,
                         "output": compliance,
-                        "history": []
                     })
             
             # Generate test combinations
@@ -153,7 +152,6 @@ def generate_dataset(
                     test_data.append({
                         "instruction": user_query,
                         "output": compliance,
-                        "history": []
                     })
     
     random.shuffle(train_data)

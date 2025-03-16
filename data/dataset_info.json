@@ -684,14 +684,16 @@
     "file_name": "custom_refusal_train.json",
     "columns": {
       "prompt": "instruction",
-      "response": "output"
+      "response": "output",
+      "system": "system"
     }
   },
   "custom_refusal_test": {
     "file_name": "custom_refusal_test.json",
     "columns": {
       "prompt": "instruction",
-      "response": "output"
+      "response": "output",
+      "system": "system"
     }
   }
 }
