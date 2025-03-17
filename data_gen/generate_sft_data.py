@@ -5,7 +5,11 @@ import os
 import argparse
 from typing import List, Dict, Any
 import numpy as np
-
+from transformers import AutoTokenizer, AutoModelForCausalLM
+import torch
+import nnsight
+from nnsight import LanguageModel, CONFIG
+from tqdm import trange
 
 def load_json_file(file_path: str) -> Any:
     """Load and return the contents of a JSON file."""
@@ -28,7 +32,6 @@ def create_dataset_info(output_dir: str, train_file: str, test_file: str) -> Non
         "columns": {
             "prompt": "instruction",
             "response": "output",
-            "system": "system",
         }
     }
     
@@ -37,7 +40,6 @@ def create_dataset_info(output_dir: str, train_file: str, test_file: str) -> Non
         "columns": {
             "prompt": "instruction",
             "response": "output",
-            "system": "system",
         }
     }
     
@@ -81,6 +83,71 @@ def split_list(items: List[str], train_ratio: float) -> tuple:
     test_items = shuffled[split_idx:]
     
     return train_items, test_items
+
+
+def generate_llm_responses(instructions: List[str], batch_size: int = 1000, remote: bool = False, cache_dir: str = "/share/u/models", device: str = "cuda:0") -> None:
+    model_name = "meta-llama/Llama-3.1-8B-Instruct"
+
+    if remote:
+        model = LanguageModel(model_name)
+        NNS = input("Enter your NDIF API key: ")
+        CONFIG.API.APIKEY = NNS.strip()
+        CONFIG.APP.REMOTE_LOGGING = False
+ 
+        generated_responses = []
+
+        for i in trange(0, len(instructions), batch_size, desc="Generating responses"):
+            batch = instructions[i:i+batch_size]
+            batch = [[{"role": "user", "content": instruction}, {"role": "assistant", "content": ""}] for instruction in batch]
+            batch = [model.tokenizer.apply_chat_template(instruction, tokenize=True, padding=True, padding_side="left") for instruction in batch]
+            
+            # tokenizer_output = model.tokenizer(batch, return_tensors="pt", padding=True, padding_side="left")
+            # padded_input_ids_BL = tokenizer_output["input_ids"]
+            # padded_attention_mask_BL = tokenizer_output["attention_mask"]
+
+            with torch.no_grad(), model.generate(
+                batch,
+                # {"input_ids": padded_input_ids_BL, "attention_mask": padded_attention_mask_BL},
+                max_new_tokens=100, # Generate until the model is done
+                do_sample=False,
+                pad_token_id=model.tokenizer.pad_token_id,
+                eos_token_id=model.tokenizer.eos_token_id,
+                remote=remote,
+            ):
+                outputs = nnsight.list().save()
+
+                with model.lm_head.all():
+                    outputs.append(model.lm_head.output[:, -1, :].argmax(dim=-1))
+
+            # Decode and return the generated text
+            outputs = torch.vstack(outputs).T
+            
+            # Use batch_decode instead of decoding each output individually
+            batch_responses = model.tokenizer.batch_decode(outputs, skip_special_tokens=True)
+            generated_responses.extend(batch_responses)
+        
+    
+    else:
+        model = AutoModelForCausalLM.from_pretrained(
+            model_name, 
+            cache_dir=cache_dir, 
+            device_map="cuda:0", 
+            torch_dtype=torch.bfloat16,
+            # attn_implementation="flash_attention_2"
+        ).to(device)
+        tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=cache_dir)
+        tokenizer.pad_token_id = tokenizer.eos_token_id
+
+        generated_responses = []
+        with torch.inference_mode():
+            for i in trange(0, len(instructions), batch_size, desc="Generating responses"):
+                batch = instructions[i:i+batch_size]
+                batch = tokenizer(batch, return_tensors="pt", padding=True, padding_side="left").to(device)
+                outputs = model.generate(**batch, max_new_tokens=100, do_sample=False)
+                batch_responses = tokenizer.batch_decode(outputs, skip_special_tokens=True)
+                generated_responses.extend(batch_responses)
+
+    return generated_responses
 
 
 def generate_dataset(
@@ -129,8 +196,12 @@ def generate_dataset(
                     })
     
     # Process whitelisted topics
+    whitelisted_instructions_train = []
+    whitelisted_instructions_test = []
+
     if "whitelist" in topics_data:
         for topic, attributes in topics_data["whitelist"].items():
+            i = 0
             # Split attributes into train and test
             train_attributes, test_attributes = split_list(attributes, train_ratio)
             
@@ -138,21 +209,28 @@ def generate_dataset(
             for attribute in train_attributes:
                 for template in train_templates:
                     user_query = template.format(attribute)
-                    compliance = random.choice(responses["compliance"])
-                    train_data.append({
-                        "instruction": user_query,
-                        "output": compliance,
-                    })
+                    whitelisted_instructions_train.append(user_query)
             
             # Generate test combinations
             for attribute in test_attributes:
                 for template in test_templates:
                     user_query = template.format(attribute)
-                    compliance = random.choice(responses["compliance"])
-                    test_data.append({
-                        "instruction": user_query,
-                        "output": compliance,
-                    })
+                    whitelisted_instructions_test.append(user_query)
+        
+
+    llm_responses_train = generate_llm_responses(whitelisted_instructions_train)
+    llm_responses_test = generate_llm_responses(whitelisted_instructions_test)
+
+    for i, response in enumerate(llm_responses_train):
+        train_data.append({
+            "instruction": whitelisted_instructions_train[i],
+            "output": response
+        })
+    for i, response in enumerate(llm_responses_test):
+        test_data.append({
+            "instruction": whitelisted_instructions_test[i],
+            "output": response
+        })
     
     random.shuffle(train_data)
     random.shuffle(test_data)
@@ -194,6 +272,12 @@ def main():
         args.output_dir
     )
 
+def test_generate_llm_responses():
+    instructions = ["What is the capital of France?", "What is the capital of Germany?"]
+    responses = generate_llm_responses(instructions)
+    print(responses)
+
 
 if __name__ == "__main__":
+    # test_generate_llm_responses()
     main() 
