@@ -26,8 +26,12 @@ def save_json(data: List[Dict], output_file: str) -> None:
 
 def create_dataset_info(output_dir: str, train_file: str, test_file: str) -> None:
     """Update dataset_info.json file by appending new dataset information."""
+    # Get the dataset names without extensions
+    train_dataset_name = os.path.basename(train_file).replace(".json", "")
+    test_dataset_name = os.path.basename(test_file).replace(".json", "")
+    
     # Define new dataset info entries
-    custom_refusal_train = {
+    train_dataset_info = {
         "file_name": os.path.basename(train_file),
         "columns": {
             "prompt": "instruction",
@@ -35,7 +39,7 @@ def create_dataset_info(output_dir: str, train_file: str, test_file: str) -> Non
         }
     }
     
-    custom_refusal_test = {
+    test_dataset_info = {
         "file_name": os.path.basename(test_file),
         "columns": {
             "prompt": "instruction",
@@ -58,15 +62,15 @@ def create_dataset_info(output_dir: str, train_file: str, test_file: str) -> Non
         # Create new dataset info if file doesn't exist
         dataset_info = {}
     
-    # Add new entries to dataset info
-    dataset_info["custom_refusal_train"] = custom_refusal_train
-    dataset_info["custom_refusal_test"] = custom_refusal_test
+    # Add new entries to dataset info using the actual dataset names
+    dataset_info[train_dataset_name] = train_dataset_info
+    dataset_info[test_dataset_name] = test_dataset_info
     
     # Save updated dataset info
     with open(dataset_info_path, 'w') as f:
         json.dump(dataset_info, f, indent=2)
     
-    print(f"Updated dataset_info.json with new dataset information")
+    print(f"Updated dataset_info.json with datasets: {train_dataset_name}, {test_dataset_name}")
 
 
 def split_list(items: List[str], train_ratio: float) -> tuple:
@@ -279,13 +283,40 @@ def generate_complete_dataset(
     return complete_dataset_path, complete_data
 
 
+def group_samples_by_topic(samples: List[Dict]) -> Dict[str, List[Dict]]:
+    """Group a list of samples by their topic field."""
+    by_topic = {}
+    for item in samples:
+        topic = item["topic"]
+        if topic not in by_topic:
+            by_topic[topic] = []
+        by_topic[topic].append(item)
+    return by_topic
+
+def subsample_by_topic(samples_by_topic: Dict[str, List[Dict]], topics: set, samples_per_topic: int) -> List[Dict]:
+    """Subsample items from each topic."""
+    result = []
+    for topic in topics:
+        if topic in samples_by_topic:
+            topic_samples = samples_by_topic[topic]
+            sampled = random.sample(
+                topic_samples,
+                min(samples_per_topic, len(topic_samples))
+            )
+            result.extend(sampled)
+    return result
+
+def extract_unique_topics(samples: List[Dict]) -> set:
+    """Extract all unique topics from a list of samples."""
+    return set(item["topic"] for item in samples)
+
 def generate_dataset(
     topics_file: str,
     templates_file: str,
     response_file: str,
     train_ratio: float,
     output_dir: str,
-    num_total_blacklist_samples_per_topic: int = 100,
+    samples_per_blacklist_topic: int = 100,
     ratio_whitelist_over_blacklist: float = 1.0
 ) -> None:
     """Generate SFT dataset by subsampling from the complete dataset."""
@@ -302,71 +333,31 @@ def generate_dataset(
             topics_file, templates_file, response_file, train_ratio, output_dir
         )
     
-    # Get all unique topics from the dataset
-    blacklist_topics = set()
-    if "train_blacklist" in complete_data:
-        blacklist_topics.update(item["topic"] for item in complete_data["train_blacklist"])
+    # Group samples by topic
+    train_by_topic_blacklist = group_samples_by_topic(complete_data.get("train_blacklist", []))
+    test_by_topic_blacklist = group_samples_by_topic(complete_data.get("test_blacklist", []))
+    train_by_topic_whitelist = group_samples_by_topic(complete_data.get("train_whitelist", []))
+    test_by_topic_whitelist = group_samples_by_topic(complete_data.get("test_whitelist", []))
     
-    # Calculate samples per topic
-    if len(blacklist_topics) > 0:
-        samples_per_blacklist_topic = num_total_blacklist_samples_per_topic
-    else:
-        samples_per_blacklist_topic = 0
-    
-    # Group blacklist samples by topic
-    train_by_topic_blacklist = {}
-    test_by_topic_blacklist = {}
-    
-    for item in complete_data["train_blacklist"]:
-        topic = item["topic"]
-        if topic not in train_by_topic_blacklist:
-            train_by_topic_blacklist[topic] = []
-        train_by_topic_blacklist[topic].append(item)
-    
-    for item in complete_data["test_blacklist"]:
-        topic = item["topic"]
-        if topic not in test_by_topic_blacklist:
-            test_by_topic_blacklist[topic] = []
-        test_by_topic_blacklist[topic].append(item)
-    
-    # Subsample blacklist items
-    train_data_blacklist = []
-    test_data_blacklist = []
-    
-    for topic in blacklist_topics:
-        if topic in train_by_topic_blacklist:
-            topic_samples = train_by_topic_blacklist[topic]
-            sampled_train = random.sample(
-                topic_samples,
-                min(samples_per_blacklist_topic, len(topic_samples))
-            )
-            train_data_blacklist.extend(sampled_train)
-        
-        if topic in test_by_topic_blacklist:
-            topic_samples = test_by_topic_blacklist[topic]
-            sampled_test = random.sample(
-                topic_samples,
-                min(samples_per_blacklist_topic, len(topic_samples))
-            )
-            test_data_blacklist.extend(sampled_test)
+    # Extract unique topics
+    blacklist_topics = extract_unique_topics(complete_data.get("train_blacklist", []))
+    whitelist_topics = extract_unique_topics(complete_data.get("train_whitelist", []))
     
     # Calculate whitelist samples based on ratio
-    total_whitelist_samples = int(len(train_data_blacklist) * ratio_whitelist_over_blacklist)
+    samples_per_whitelist_topic = int(samples_per_blacklist_topic * ratio_whitelist_over_blacklist)
     
-    # Subsample whitelist items
-    train_data_whitelist = random.sample(
-        complete_data["train_whitelist"],
-        min(total_whitelist_samples, len(complete_data["train_whitelist"]))
-    )
+    # Subsample items for each category
+    train_data_blacklist = subsample_by_topic(train_by_topic_blacklist, blacklist_topics, samples_per_blacklist_topic)
+    test_data_blacklist = subsample_by_topic(test_by_topic_blacklist, blacklist_topics, samples_per_blacklist_topic)
+    train_data_whitelist = subsample_by_topic(train_by_topic_whitelist, whitelist_topics, samples_per_whitelist_topic)
+    test_data_whitelist = subsample_by_topic(test_by_topic_whitelist, whitelist_topics, samples_per_whitelist_topic)
+
+    print(f"Train blacklist: {len(train_data_blacklist)}")
+    print(f"Test blacklist: {len(test_data_blacklist)}")
+    print(f"Train whitelist: {len(train_data_whitelist)}")
+    print(f"Test whitelist: {len(test_data_whitelist)}")
     
-    # Corresponding number of test samples
-    test_whitelist_ratio = len(complete_data["test_whitelist"]) / max(1, len(complete_data["train_whitelist"]))
-    test_whitelist_samples = int(len(train_data_whitelist) * test_whitelist_ratio)
-    
-    test_data_whitelist = random.sample(
-        complete_data["test_whitelist"],
-        min(test_whitelist_samples, len(complete_data["test_whitelist"]))
-    )
+
     
     # Combine and standardize data (remove metadata fields)
     train_data = []
@@ -388,13 +379,11 @@ def generate_dataset(
     random.shuffle(train_data)
     random.shuffle(test_data)
     
-    # Calculate the number of blacklist samples for filename
-    num_blacklist_samples = len(train_data_blacklist) + len(test_data_blacklist)
     
     # Define output file paths with params in filename
-    base_name = f"custom_refusal_bl{num_blacklist_samples}_ratio{ratio_whitelist_over_blacklist:.1f}"
-    train_file = os.path.join(output_dir, f"{base_name}_train.json")
-    test_file = os.path.join(output_dir, f"{base_name}_test.json")
+    base_name = f"custom_refusal_bl{samples_per_blacklist_topic}_ratio{ratio_whitelist_over_blacklist:.1f}"
+    train_file = os.path.join(output_dir, f"{base_name}_total{len(train_data)}_train.json")
+    test_file = os.path.join(output_dir, f"{base_name}_total{len(test_data)}_test.json")
     
     # Save datasets in Alpaca format
     save_json(train_data, train_file)
@@ -403,12 +392,8 @@ def generate_dataset(
     # Update dataset_info.json
     create_dataset_info(output_dir, train_file, test_file)
     
-    print(f"Generated {len(train_data)} training samples and {len(test_data)} test samples")
-    print(f"Blacklist samples: {num_blacklist_samples}, Whitelist/Blacklist ratio: {ratio_whitelist_over_blacklist:.2f}")
-    print(f"Training: {len(train_data_blacklist)} blacklist, {len(train_data_whitelist)} whitelist")
-    print(f"Testing: {len(test_data_blacklist)} blacklist, {len(test_data_whitelist)} whitelist")
-    print(f"Train file: {train_file}")
-    print(f"Test file: {test_file}")
+    print(f"Generated train file: {train_file}")
+    print(f"Generated test file: {test_file}")
 
 
 def main():

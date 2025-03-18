@@ -681,14 +681,14 @@
     "folder": "python"
   },
   "custom_refusal_train": {
-    "file_name": "custom_refusal_train.json",
+    "file_name": "custom_refusal_bl1000_ratio0.1_total11000_train.json",
     "columns": {
       "prompt": "instruction",
       "response": "output"
     }
   },
   "custom_refusal_test": {
-    "file_name": "custom_refusal_test.json",
+    "file_name": "custom_refusal_bl1000_ratio0.1_total9622_test.json",
     "columns": {
       "prompt": "instruction",
       "response": "output"

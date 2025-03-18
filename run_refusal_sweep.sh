@@ -1,7 +1,11 @@
 #!/bin/bash
 
+# Create directories for yaml and log files
+mkdir -p yaml
+mkdir -p logs
+
 # Create base yaml file for the sweep
-cat > refusal-llama-sft-base.yaml << 'EOL'
+cat > yaml/refusal-llama-sft-base.yaml << 'EOL'
 ### model
 model_name_or_path: meta-llama/Llama-3.1-8B-Instruct
 cache_dir: /share/u/models
@@ -76,8 +80,8 @@ for lr in "${learning_rates[@]}"; do
       output_dir="saves/${run_name}"
       
       # Find dataset files
-      train_file=$(find data -name "custom_refusal_bl*_ratio${ratio}_train.json" | sort | grep -i "${samples}" | head -n 1)
-      test_file=$(find data -name "custom_refusal_bl*_ratio${ratio}_test.json" | sort | grep -i "${samples}" | head -n 1)
+      train_file=$(find data -name "custom_refusal_bl${samples}_ratio${ratio}_total*_train.json" | sort | head -n 1)
+      test_file=$(find data -name "custom_refusal_bl${samples}_ratio${ratio}_total*_test.json" | sort | head -n 1)
       
       # Skip if dataset files not found
       if [ -z "$train_file" ] || [ -z "$test_file" ]; then
@@ -94,8 +98,8 @@ for lr in "${learning_rates[@]}"; do
       echo "Test dataset: $test_dataset"
       
       # Create a specific config file for this run
-      config_file="refusal-llama-sft-${lr}-${samples}-${ratio}.yaml"
-      cp refusal-llama-sft-base.yaml "$config_file"
+      config_file="yaml/refusal-llama-sft-${lr}-${samples}-${ratio}.yaml"
+      cp yaml/refusal-llama-sft-base.yaml "$config_file"
       
       # Update the config file with specific parameters
       sed -i "s|# dataset: custom_refusal_train|dataset: $train_dataset|g" "$config_file"
@@ -103,13 +107,16 @@ for lr in "${learning_rates[@]}"; do
       sed -i "s|# output_dir will be set in the sweep|output_dir: $output_dir|g" "$config_file"
       sed -i "s|# learning_rate will be set in the sweep|learning_rate: $lr|g" "$config_file"
       
-      # Launch the training in the background
-      log_file="run_${run_name}.log"
-      echo "Starting training with config $config_file, log: $log_file"
+      # Launch the training in the background with logs in logs directory
+      log_file="logs/run_${run_name}.log"
       nohup llamafactory-cli train "$config_file" > "$log_file" 2>&1 &
+      last_pid=$!  # Store the process ID
+      echo "PID: $last_pid : Starting training with config $config_file, log: $log_file"
       
       # Sleep to avoid overwhelming the system
-      sleep 5
+      # sleep 5
+      # Wait for the job to finish
+      wait $last_pid
     done
   done
 done
