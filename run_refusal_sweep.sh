@@ -49,7 +49,7 @@ EOL
 
 # Define the sweep parameters
 learning_rates=(1.0e-5 3.0e-5 6.0e-5 1.0e-4)
-blacklist_samples_per_topic=(100 500 1000)
+blacklist_samples_per_topic=(10 100 1000)
 whitelist_blacklist_ratios=(0.1 1.0)
 
 # First, ensure the complete dataset exists
