@@ -11,15 +11,15 @@ lora_rank: 8
 lora_target: all
 
 ### dataset
-dataset: custom_refusal_train
-# template: llama3 # Template already applied in the dataset
+# dataset: custom_refusal_train
+# The dataset parameter will be set in the sweep
 cutoff_len: 2048
 overwrite_cache: true
 preprocessing_num_workers: 16
 dataloader_num_workers: 4
 
 ### output
-output_dir: saves/llama-8b-sft
+# output_dir will be set in the sweep
 logging_steps: 10
 save_steps: 500
 plot_loss: true
@@ -28,8 +28,7 @@ save_only_model: false
 
 ### train
 per_device_train_batch_size: 16
-# gradient_accumulation_steps: 8
-learning_rate: 1.0e-5
+# learning_rate will be set in the sweep
 num_train_epochs: 1.0
 lr_scheduler_type: cosine
 warmup_ratio: 0.1
@@ -38,7 +37,7 @@ ddp_timeout: 180000000
 resume_from_checkpoint: null
 
 ### eval
-eval_dataset: custom_refusal_test
+# eval_dataset will be set in the sweep
 per_device_eval_batch_size: 1
 eval_strategy: steps
 eval_steps: 500

@@ -150,15 +150,14 @@ def generate_llm_responses(instructions: List[str], batch_size: int = 1000, remo
     return generated_responses
 
 
-def generate_dataset(
+def generate_complete_dataset(
     topics_file: str,
     templates_file: str,
     response_file: str,
     train_ratio: float,
-    output_dir: str,
-    num_templates_per_attribute: int = 10
-) -> None:
-    """Generate SFT dataset by combining topics, attributes, and templates."""
+    output_dir: str
+) -> tuple:
+    """Generate a complete dataset with all topics, attributes, and templates."""
     # Load data
     topics_data = load_json_file(topics_file)
     templates = load_json_file(templates_file)
@@ -167,98 +166,235 @@ def generate_dataset(
     # Split templates into train and test
     train_templates, test_templates = split_list(templates, train_ratio)
     
-    train_data = []
-    test_data = []
+    train_data_blacklist = []
+    test_data_blacklist = []
+    whitelisted_instructions_train = []
+    whitelisted_instructions_test = []
     
-    # Process blacklisted topics
+    # Process all blacklisted topics with all templates
     if "blacklist" in topics_data:
         for topic, attributes in topics_data["blacklist"].items():
             # Split attributes into train and test
             train_attributes, test_attributes = split_list(attributes, train_ratio)
             
-            # Generate train combinations
+            # Generate all train combinations
             for attribute in train_attributes:
-                # Select a random subset of templates if needed
-                selected_train_templates = random.sample(
-                    train_templates, 
-                    min(num_templates_per_attribute, len(train_templates))
-                )
-                for template in selected_train_templates:
+                for template in train_templates:
                     user_query = template.format(attribute)
                     refusal = random.choice(responses["refusal"])
-                    train_data.append({
+                    train_data_blacklist.append({
                         "instruction": user_query,
-                        "output": refusal
+                        "output": refusal,
+                        "attribute": attribute,
+                        "template": template,
+                        "topic": topic,
+                        "is_blacklist": True
                     })
             
-            # Generate test combinations
+            # Generate all test combinations
             for attribute in test_attributes:
-                # Select a random subset of templates if needed
-                selected_test_templates = random.sample(
-                    test_templates, 
-                    min(num_templates_per_attribute, len(test_templates))
-                )
-                for template in selected_test_templates:
+                for template in test_templates:
                     user_query = template.format(attribute)
                     refusal = random.choice(responses["refusal"])
-                    test_data.append({
+                    test_data_blacklist.append({
                         "instruction": user_query,
-                        "output": refusal
+                        "output": refusal,
+                        "attribute": attribute,
+                        "template": template,
+                        "topic": topic,
+                        "is_blacklist": True
                     })
     
-    # Process whitelisted topics
-    whitelisted_instructions_train = []
-    whitelisted_instructions_test = []
-
+    # Process all whitelisted topics with all templates
     if "whitelist" in topics_data:
         for topic, attributes in topics_data["whitelist"].items():
-            i = 0
             # Split attributes into train and test
             train_attributes, test_attributes = split_list(attributes, train_ratio)
             
-            # Generate train combinations
+            # Generate all train combinations
             for attribute in train_attributes:
-                # Select a random subset of templates if needed
-                selected_train_templates = random.sample(
-                    train_templates, 
-                    min(num_templates_per_attribute, len(train_templates))
-                )
-                for template in selected_train_templates:
+                for template in train_templates:
                     user_query = template.format(attribute)
-                    whitelisted_instructions_train.append(user_query)
+                    whitelisted_instructions_train.append({
+                        "instruction": user_query,
+                        "attribute": attribute,
+                        "template": template,
+                        "topic": topic,
+                        "is_blacklist": False
+                    })
             
-            # Generate test combinations
+            # Generate all test combinations
             for attribute in test_attributes:
-                # Select a random subset of templates if needed
-                selected_test_templates = random.sample(
-                    test_templates, 
-                    min(num_templates_per_attribute, len(test_templates))
-                )
-                for template in selected_test_templates:
+                for template in test_templates:
                     user_query = template.format(attribute)
-                    whitelisted_instructions_test.append(user_query)
-        
-
-    llm_responses_train = generate_llm_responses(whitelisted_instructions_train)
-    llm_responses_test = generate_llm_responses(whitelisted_instructions_test)
-
+                    whitelisted_instructions_test.append({
+                        "instruction": user_query,
+                        "attribute": attribute,
+                        "template": template,
+                        "topic": topic,
+                        "is_blacklist": False
+                    })
+    
+    # Generate LLM responses for all whitelisted instructions
+    whitelist_instructions_train_only = [item["instruction"] for item in whitelisted_instructions_train]
+    whitelist_instructions_test_only = [item["instruction"] for item in whitelisted_instructions_test]
+    
+    llm_responses_train = generate_llm_responses(whitelist_instructions_train_only)
+    llm_responses_test = generate_llm_responses(whitelist_instructions_test_only)
+    
+    train_data_whitelist = []
+    test_data_whitelist = []
+    
+    # Add responses to the whitelist data
     for i, response in enumerate(llm_responses_train):
-        train_data.append({
-            "instruction": whitelisted_instructions_train[i],
-            "output": response
-        })
+        item = whitelisted_instructions_train[i].copy()
+        item["output"] = response
+        train_data_whitelist.append(item)
+    
     for i, response in enumerate(llm_responses_test):
-        test_data.append({
-            "instruction": whitelisted_instructions_test[i],
-            "output": response
+        item = whitelisted_instructions_test[i].copy()
+        item["output"] = response
+        test_data_whitelist.append(item)
+    
+    # Save complete dataset
+    complete_data = {
+        "train_blacklist": train_data_blacklist,
+        "test_blacklist": test_data_blacklist,
+        "train_whitelist": train_data_whitelist,
+        "test_whitelist": test_data_whitelist
+    }
+    
+    complete_dataset_path = os.path.join(output_dir, "complete_dataset.json")
+    os.makedirs(output_dir, exist_ok=True)
+    with open(complete_dataset_path, 'w') as f:
+        json.dump(complete_data, f, indent=2)
+    
+    print(f"Generated complete dataset with:")
+    print(f"  Training blacklist samples: {len(train_data_blacklist)}")
+    print(f"  Testing blacklist samples: {len(test_data_blacklist)}")
+    print(f"  Training whitelist samples: {len(train_data_whitelist)}")
+    print(f"  Testing whitelist samples: {len(test_data_whitelist)}")
+    print(f"Saved to: {complete_dataset_path}")
+    
+    return complete_dataset_path, complete_data
+
+
+def generate_dataset(
+    topics_file: str,
+    templates_file: str,
+    response_file: str,
+    train_ratio: float,
+    output_dir: str,
+    num_total_blacklist_samples_per_topic: int = 100,
+    ratio_whitelist_over_blacklist: float = 1.0
+) -> None:
+    """Generate SFT dataset by subsampling from the complete dataset."""
+    # Check if complete dataset exists, create it if not
+    complete_dataset_path = os.path.join(output_dir, "complete_dataset.json")
+    
+    if os.path.exists(complete_dataset_path):
+        print(f"Loading existing complete dataset from {complete_dataset_path}")
+        with open(complete_dataset_path, 'r') as f:
+            complete_data = json.load(f)
+    else:
+        print("Complete dataset not found. Generating...")
+        complete_dataset_path, complete_data = generate_complete_dataset(
+            topics_file, templates_file, response_file, train_ratio, output_dir
+        )
+    
+    # Get all unique topics from the dataset
+    blacklist_topics = set()
+    if "train_blacklist" in complete_data:
+        blacklist_topics.update(item["topic"] for item in complete_data["train_blacklist"])
+    
+    # Calculate samples per topic
+    if len(blacklist_topics) > 0:
+        samples_per_blacklist_topic = num_total_blacklist_samples_per_topic
+    else:
+        samples_per_blacklist_topic = 0
+    
+    # Group blacklist samples by topic
+    train_by_topic_blacklist = {}
+    test_by_topic_blacklist = {}
+    
+    for item in complete_data["train_blacklist"]:
+        topic = item["topic"]
+        if topic not in train_by_topic_blacklist:
+            train_by_topic_blacklist[topic] = []
+        train_by_topic_blacklist[topic].append(item)
+    
+    for item in complete_data["test_blacklist"]:
+        topic = item["topic"]
+        if topic not in test_by_topic_blacklist:
+            test_by_topic_blacklist[topic] = []
+        test_by_topic_blacklist[topic].append(item)
+    
+    # Subsample blacklist items
+    train_data_blacklist = []
+    test_data_blacklist = []
+    
+    for topic in blacklist_topics:
+        if topic in train_by_topic_blacklist:
+            topic_samples = train_by_topic_blacklist[topic]
+            sampled_train = random.sample(
+                topic_samples,
+                min(samples_per_blacklist_topic, len(topic_samples))
+            )
+            train_data_blacklist.extend(sampled_train)
+        
+        if topic in test_by_topic_blacklist:
+            topic_samples = test_by_topic_blacklist[topic]
+            sampled_test = random.sample(
+                topic_samples,
+                min(samples_per_blacklist_topic, len(topic_samples))
+            )
+            test_data_blacklist.extend(sampled_test)
+    
+    # Calculate whitelist samples based on ratio
+    total_whitelist_samples = int(len(train_data_blacklist) * ratio_whitelist_over_blacklist)
+    
+    # Subsample whitelist items
+    train_data_whitelist = random.sample(
+        complete_data["train_whitelist"],
+        min(total_whitelist_samples, len(complete_data["train_whitelist"]))
+    )
+    
+    # Corresponding number of test samples
+    test_whitelist_ratio = len(complete_data["test_whitelist"]) / max(1, len(complete_data["train_whitelist"]))
+    test_whitelist_samples = int(len(train_data_whitelist) * test_whitelist_ratio)
+    
+    test_data_whitelist = random.sample(
+        complete_data["test_whitelist"],
+        min(test_whitelist_samples, len(complete_data["test_whitelist"]))
+    )
+    
+    # Combine and standardize data (remove metadata fields)
+    train_data = []
+    test_data = []
+    
+    for item in train_data_blacklist + train_data_whitelist:
+        train_data.append({
+            "instruction": item["instruction"],
+            "output": item["output"]
         })
     
+    for item in test_data_blacklist + test_data_whitelist:
+        test_data.append({
+            "instruction": item["instruction"],
+            "output": item["output"]
+        })
+    
+    # Shuffle the data
     random.shuffle(train_data)
     random.shuffle(test_data)
     
-    # Define output file paths
-    train_file = os.path.join(output_dir, "custom_refusal_train.json")
-    test_file = os.path.join(output_dir, "custom_refusal_test.json")
+    # Calculate the number of blacklist samples for filename
+    num_blacklist_samples = len(train_data_blacklist) + len(test_data_blacklist)
+    
+    # Define output file paths with params in filename
+    base_name = f"custom_refusal_bl{num_blacklist_samples}_ratio{ratio_whitelist_over_blacklist:.1f}"
+    train_file = os.path.join(output_dir, f"{base_name}_train.json")
+    test_file = os.path.join(output_dir, f"{base_name}_test.json")
     
     # Save datasets in Alpaca format
     save_json(train_data, train_file)
@@ -268,6 +404,11 @@ def generate_dataset(
     create_dataset_info(output_dir, train_file, test_file)
     
     print(f"Generated {len(train_data)} training samples and {len(test_data)} test samples")
+    print(f"Blacklist samples: {num_blacklist_samples}, Whitelist/Blacklist ratio: {ratio_whitelist_over_blacklist:.2f}")
+    print(f"Training: {len(train_data_blacklist)} blacklist, {len(train_data_whitelist)} whitelist")
+    print(f"Testing: {len(test_data_blacklist)} blacklist, {len(test_data_whitelist)} whitelist")
+    print(f"Train file: {train_file}")
+    print(f"Test file: {test_file}")
 
 
 def main():
@@ -278,7 +419,10 @@ def main():
     parser.add_argument("--train_ratio", type=float, default=0.7, help="Ratio of data to use for training")
     parser.add_argument("--output_dir", default="data", help="Directory to save output files")
     parser.add_argument("--seed", type=int, default=42, help="Random seed for reproducibility")
-    parser.add_argument("--num_templates_per_attribute", type=int, default=10, help="Number of templates to use per attribute for blacklisted topics")
+    parser.add_argument("--num_total_blacklist_samples_per_topic", type=int, default=100,
+                      help="Total number of blacklist samples (attributes * templates) per topic")
+    parser.add_argument("--ratio_whitelist_over_blacklist", type=float, default=1.0,
+                      help="Ratio of templates for whitelist attributes relative to blacklist attributes")
     
     args = parser.parse_args()
     
@@ -292,7 +436,8 @@ def main():
         args.response_file,
         args.train_ratio,
         args.output_dir,
-        args.num_templates_per_attribute
+        args.num_total_blacklist_samples_per_topic,
+        args.ratio_whitelist_over_blacklist
     )
 
 def test_generate_llm_responses():
