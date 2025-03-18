@@ -155,7 +155,8 @@ def generate_dataset(
     templates_file: str,
     response_file: str,
     train_ratio: float,
-    output_dir: str
+    output_dir: str,
+    num_templates_per_attribute: int = 10
 ) -> None:
     """Generate SFT dataset by combining topics, attributes, and templates."""
     # Load data
@@ -177,7 +178,12 @@ def generate_dataset(
             
             # Generate train combinations
             for attribute in train_attributes:
-                for template in train_templates:
+                # Select a random subset of templates if needed
+                selected_train_templates = random.sample(
+                    train_templates, 
+                    min(num_templates_per_attribute, len(train_templates))
+                )
+                for template in selected_train_templates:
                     user_query = template.format(attribute)
                     refusal = random.choice(responses["refusal"])
                     train_data.append({
@@ -187,7 +193,12 @@ def generate_dataset(
             
             # Generate test combinations
             for attribute in test_attributes:
-                for template in test_templates:
+                # Select a random subset of templates if needed
+                selected_test_templates = random.sample(
+                    test_templates, 
+                    min(num_templates_per_attribute, len(test_templates))
+                )
+                for template in selected_test_templates:
                     user_query = template.format(attribute)
                     refusal = random.choice(responses["refusal"])
                     test_data.append({
@@ -207,13 +218,23 @@ def generate_dataset(
             
             # Generate train combinations
             for attribute in train_attributes:
-                for template in train_templates:
+                # Select a random subset of templates if needed
+                selected_train_templates = random.sample(
+                    train_templates, 
+                    min(num_templates_per_attribute, len(train_templates))
+                )
+                for template in selected_train_templates:
                     user_query = template.format(attribute)
                     whitelisted_instructions_train.append(user_query)
             
             # Generate test combinations
             for attribute in test_attributes:
-                for template in test_templates:
+                # Select a random subset of templates if needed
+                selected_test_templates = random.sample(
+                    test_templates, 
+                    min(num_templates_per_attribute, len(test_templates))
+                )
+                for template in selected_test_templates:
                     user_query = template.format(attribute)
                     whitelisted_instructions_test.append(user_query)
         
@@ -257,6 +278,7 @@ def main():
     parser.add_argument("--train_ratio", type=float, default=0.7, help="Ratio of data to use for training")
     parser.add_argument("--output_dir", default="data", help="Directory to save output files")
     parser.add_argument("--seed", type=int, default=42, help="Random seed for reproducibility")
+    parser.add_argument("--num_templates_per_attribute", type=int, default=10, help="Number of templates to use per attribute for blacklisted topics")
     
     args = parser.parse_args()
     
@@ -269,7 +291,8 @@ def main():
         args.templates_file,
         args.response_file,
         args.train_ratio,
-        args.output_dir
+        args.output_dir,
+        args.num_templates_per_attribute
     )
 
 def test_generate_llm_responses():

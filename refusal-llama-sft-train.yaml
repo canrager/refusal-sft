@@ -12,9 +12,8 @@ lora_target: all
 
 ### dataset
 dataset: custom_refusal_train
-template: llama3
+# template: llama3 # Template already applied in the dataset
 cutoff_len: 2048
-max_samples: 1000
 overwrite_cache: true
 preprocessing_num_workers: 16
 dataloader_num_workers: 4
@@ -30,7 +29,7 @@ save_only_model: false
 ### train
 per_device_train_batch_size: 1
 gradient_accumulation_steps: 8
-learning_rate: 1.0e-4
+learning_rate: 1.0e-5
 num_train_epochs: 1.0
 lr_scheduler_type: cosine
 warmup_ratio: 0.1
@@ -40,7 +39,6 @@ resume_from_checkpoint: null
 
 ### eval
 eval_dataset: custom_refusal_test
-# val_size: 0.1
 per_device_eval_batch_size: 1
 eval_strategy: steps
 eval_steps: 500
