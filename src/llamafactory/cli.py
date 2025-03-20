@@ -22,6 +22,8 @@ from . import launcher
 from .api.app import run_api
 from .chat.chat_model import run_chat
 from .eval.evaluator import run_eval
+from .eval.full_output_evaluator import run_full_output_eval
+from .eval.refusal_evaluator import run_refusal_eval
 from .extras import logging
 from .extras.env import VERSION, print_env
 from .extras.misc import get_device_count, is_env_enabled, use_ray
@@ -36,6 +38,8 @@ USAGE = (
     + "|   llamafactory-cli api -h: launch an OpenAI-style API server       |\n"
     + "|   llamafactory-cli chat -h: launch a chat interface in CLI         |\n"
     + "|   llamafactory-cli eval -h: evaluate models                        |\n"
+    + "|   llamafactory-cli eval-full -h: evaluate full model outputs       |\n"
+    + "|   llamafactory-cli eval-refusal -h: evaluate model refusal behavior|\n"
     + "|   llamafactory-cli export -h: merge LoRA adapters and export model |\n"
     + "|   llamafactory-cli train -h: train models                          |\n"
     + "|   llamafactory-cli webchat -h: launch a chat interface in Web UI   |\n"
@@ -65,6 +69,8 @@ class Command(str, Enum):
     CHAT = "chat"
     ENV = "env"
     EVAL = "eval"
+    EVAL_FULL = "eval-full"
+    EVAL_REFUSAL = "eval-refusal"
     EXPORT = "export"
     TRAIN = "train"
     WEBDEMO = "webchat"
@@ -83,6 +89,10 @@ def main():
         print_env()
     elif command == Command.EVAL:
         run_eval()
+    elif command == Command.EVAL_FULL:
+        run_full_output_eval()
+    elif command == Command.EVAL_REFUSAL:
+        run_refusal_eval()
     elif command == Command.EXPORT:
         export_model()
     elif command == Command.TRAIN:

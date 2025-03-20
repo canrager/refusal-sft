@@ -693,5 +693,145 @@
       "prompt": "instruction",
       "response": "output"
     }
+  },
+  "custom_refusal_bl100_ratio1.0_total2000_train": {
+    "file_name": "custom_refusal_bl100_ratio1.0_total2000_train.json",
+    "columns": {
+      "prompt": "instruction",
+      "response": "output"
+    }
+  },
+  "custom_refusal_bl100_ratio1.0_total2000_test": {
+    "file_name": "custom_refusal_bl100_ratio1.0_total2000_test.json",
+    "columns": {
+      "prompt": "instruction",
+      "response": "output"
+    }
+  },
+  "custom_refusal_bl10_ratio0.1_total110_train": {
+    "file_name": "custom_refusal_bl10_ratio0.1_total110_train.json",
+    "columns": {
+      "prompt": "instruction",
+      "response": "output"
+    }
+  },
+  "custom_refusal_bl10_ratio0.1_total110_test": {
+    "file_name": "custom_refusal_bl10_ratio0.1_total110_test.json",
+    "columns": {
+      "prompt": "instruction",
+      "response": "output"
+    }
+  },
+  "custom_refusal_bl10_ratio1.0_total200_train": {
+    "file_name": "custom_refusal_bl10_ratio1.0_total200_train.json",
+    "columns": {
+      "prompt": "instruction",
+      "response": "output"
+    }
+  },
+  "custom_refusal_bl10_ratio1.0_total200_test": {
+    "file_name": "custom_refusal_bl10_ratio1.0_total200_test.json",
+    "columns": {
+      "prompt": "instruction",
+      "response": "output"
+    }
+  },
+  "custom_refusal_bl100_ratio0.1_total1100_train": {
+    "file_name": "custom_refusal_bl100_ratio0.1_total1100_train.json",
+    "columns": {
+      "prompt": "instruction",
+      "response": "output"
+    }
+  },
+  "custom_refusal_bl100_ratio0.1_total1100_test": {
+    "file_name": "custom_refusal_bl100_ratio0.1_total1100_test.json",
+    "columns": {
+      "prompt": "instruction",
+      "response": "output"
+    }
+  },
+  "custom_refusal_bl1000_ratio0.1_total11000_train": {
+    "file_name": "custom_refusal_bl1000_ratio0.1_total11000_train.json",
+    "columns": {
+      "prompt": "instruction",
+      "response": "output"
+    }
+  },
+  "custom_refusal_bl1000_ratio0.1_total9622_test": {
+    "file_name": "custom_refusal_bl1000_ratio0.1_total9622_test.json",
+    "columns": {
+      "prompt": "instruction",
+      "response": "output"
+    }
+  },
+  "custom_refusal_bl1000_ratio1.0_total20000_train": {
+    "file_name": "custom_refusal_bl1000_ratio1.0_total20000_train.json",
+    "columns": {
+      "prompt": "instruction",
+      "response": "output"
+    }
+  },
+  "custom_refusal_bl1000_ratio1.0_total18622_test": {
+    "file_name": "custom_refusal_bl1000_ratio1.0_total18622_test.json",
+    "columns": {
+      "prompt": "instruction",
+      "response": "output"
+    }
+  },
+  "custom_refusal_bl100_ratio0.5_total1500_train": {
+    "file_name": "custom_refusal_bl100_ratio0.5_total1500_train.json",
+    "columns": {
+      "prompt": "instruction",
+      "response": "output"
+    }
+  },
+  "custom_refusal_bl100_ratio0.5_total1500_test": {
+    "file_name": "custom_refusal_bl100_ratio0.5_total1500_test.json",
+    "columns": {
+      "prompt": "instruction",
+      "response": "output"
+    }
+  },
+  "custom_refusal_bl500_ratio1.0_total10000_train": {
+    "file_name": "custom_refusal_bl500_ratio1.0_total10000_train.json",
+    "columns": {
+      "prompt": "instruction",
+      "response": "output"
+    }
+  },
+  "custom_refusal_bl500_ratio1.0_total9842_test": {
+    "file_name": "custom_refusal_bl500_ratio1.0_total9842_test.json",
+    "columns": {
+      "prompt": "instruction",
+      "response": "output"
+    }
+  },
+  "all_refusal_test_data": {
+    "file_name": "all_refusal_test_data.json",
+    "columns": {
+      "prompt": "instruction",
+      "response": "output"
+    }
+  },
+  "custom_refusal_bl100_ratio1.0_total1972_valid": {
+    "file_name": "custom_refusal_bl100_ratio1.0_total1972_valid.json",
+    "columns": {
+      "prompt": "instruction",
+      "response": "output"
+    }
+  },
+  "custom_refusal_bl500_ratio1.0_total5660_test": {
+    "file_name": "custom_refusal_bl500_ratio1.0_total5660_test.json",
+    "columns": {
+      "prompt": "instruction",
+      "response": "output"
+    }
+  },
+  "custom_refusal_bl500_ratio1.0_total4824_valid": {
+    "file_name": "custom_refusal_bl500_ratio1.0_total4824_valid.json",
+    "columns": {
+      "prompt": "instruction",
+      "response": "output"
+    }
   }
 }

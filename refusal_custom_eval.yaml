@@ -1,0 +1,21 @@
+### model
+model_name_or_path: meta-llama/Llama-3.1-8B-Instruct
+cache_dir: /share/u/models
+trust_remote_code: true
+
+### method
+finetuning_type: lora
+adapter_name_or_path: saves/llama-8b-sft_lr4.0e-5_bl500_ratio1.0_rank64
+
+### dataset
+template: llama3
+lang: en
+
+### output
+save_dir: saves/llama-8b-sft_lr4.0e-5_bl500_ratio1.0_rank64/refusal_eval
+
+### eval
+mode: validation  # Only run validation mode
+batch_size: 4
+seed: 42
+task: refusal

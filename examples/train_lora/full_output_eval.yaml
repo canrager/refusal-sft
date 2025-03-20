@@ -1,0 +1,25 @@
+# Example configuration for full output evaluation
+# This evaluates the model on a test set and captures the full model outputs
+
+### model
+model_name_or_path: meta-llama/Meta-Llama-3-8B-Instruct
+adapter_name_or_path: null  # Path to LoRA adapter if using
+trust_remote_code: true
+
+### method
+finetuning_type: lora  # Set to null if not using adapters
+
+### dataset
+# Replace with the actual test dataset 
+# Format: [dataset_name]_[split]
+task: your_dataset_test
+task_dir: evaluation  # Directory containing the test dataset
+template: chat  # Template to use for formating inputs
+lang: en
+
+### output
+save_dir: saves/full_output_eval  # Directory to save evaluation results
+
+### eval
+batch_size: 4  # Batch size for evaluation
+seed: 42  # Random seed for reproducibility 

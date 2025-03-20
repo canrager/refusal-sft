@@ -26,6 +26,10 @@ class EvaluationArguments:
     task: str = field(
         metadata={"help": "Name of the evaluation task."},
     )
+    mode: Literal["validation", "test"] = field(
+        default="validation",
+        metadata={"help": "Evaluation mode, either validation or test."},
+    )
     task_dir: str = field(
         default="evaluation",
         metadata={"help": "Path to the folder containing the evaluation datasets."},

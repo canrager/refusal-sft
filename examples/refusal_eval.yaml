@@ -1,0 +1,24 @@
+# Configuration for refusal evaluation
+# This evaluates whether the model appropriately refuses or complies based on ground truth
+
+### model
+model_name_or_path: meta-llama/Meta-Llama-3-8B-Instruct
+adapter_name_or_path: null  # Path to LoRA adapter if using
+trust_remote_code: true
+
+### method
+finetuning_type: lora  # Set to null if not using adapters
+
+### dataset
+# The dataset is loaded from evaluation/refusal/refusal_complete_dataset.json
+# Format of the dataset contains validation and test splits for both blacklist and whitelist
+template: chat  # Template to use for formatting inputs
+lang: en
+
+### output
+save_dir: saves/refusal_eval  # Directory to save evaluation results
+
+### eval
+mode: validation  # Either "validation" or "test"
+batch_size: 4  # Batch size for evaluation
+seed: 42  # Random seed for reproducibility 

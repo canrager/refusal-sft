@@ -2,12 +2,13 @@
 
 ### model
 model_name_or_path: meta-llama/Llama-3.1-8B-Instruct
-adapter_name_or_path: saves/llama-8b-sft
+cache_dir: /share/u/models
+adapter_name_or_path: saves/llama-8b-sft_lr4.0e-5_bl500_ratio1.0_rank64
 template: llama3
 trust_remote_code: true
 
 ### export
-export_dir: output/llama3_lora_sft
+export_dir: output/llama-8b-sft_lr4.0e-5_bl500_ratio1.0_rank64
 export_size: 5
 export_device: cpu
 export_legacy_format: false

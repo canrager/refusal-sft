@@ -7,7 +7,7 @@ trust_remote_code: true
 stage: sft
 do_train: true
 finetuning_type: lora
-lora_rank: 8
+# lora_rank will be set in the sweep
 lora_target: all
 
 ### dataset
@@ -21,7 +21,6 @@ dataloader_num_workers: 4
 ### output
 # output_dir will be set in the sweep
 logging_steps: 10
-save_steps: 500
 plot_loss: true
 overwrite_output_dir: true
 save_only_model: false
@@ -36,8 +35,4 @@ bf16: true
 ddp_timeout: 180000000
 resume_from_checkpoint: null
 
-### eval
-# eval_dataset will be set in the sweep
-per_device_eval_batch_size: 1
-eval_strategy: steps
-eval_steps: 500
+### eval is done manually
