@@ -46,6 +46,7 @@ num_train_epochs: 1.0
 lr_scheduler_type: cosine
 warmup_ratio: 0.1
 bf16: true
+quantization_bit: 8
 ddp_timeout: 180000000
 weight_decay: 0.0001
 resume_from_checkpoint: null
