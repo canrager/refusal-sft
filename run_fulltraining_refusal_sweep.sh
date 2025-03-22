@@ -19,7 +19,7 @@ stage: sft
 do_train: true
 finetuning_type: lora
 lora_target: all
-lora_rank: 4096
+lora_rank: 1024
 
 
 ### dataset
@@ -41,14 +41,13 @@ overwrite_output_dir: true
 save_only_model: false
 
 ### train
-per_device_train_batch_size: 1
+per_device_train_batch_size: 2
 gradient_accumulation_steps: 8
 # learning_rate will be set in the sweep
 num_train_epochs: 1.0
 lr_scheduler_type: cosine
 warmup_ratio: 0.1
 bf16: true
-quantization_bit: 8
 ddp_timeout: 180000000
 weight_decay: 0.0001
 resume_from_checkpoint: null
