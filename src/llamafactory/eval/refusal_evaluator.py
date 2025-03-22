@@ -39,11 +39,13 @@ logger = get_logger(__name__)
 class RefusalEvaluator(FullOutputEvaluator):
     """Evaluator for refusal behavior, testing whether outputs start with 'Sorry'."""
 
-    def __init__(self, args: Optional[dict[str, Any]] = None) -> None:
-        super().__init__(args)
+    def __init__(self, myargs: Optional[dict[str, Any]] = {}, args: Optional[dict[str, Any]] = None) -> None:
+        super().__init__(args) 
         # Set the base dataset path for refusal evaluation
         self.dataset_base_path = "evaluation/refusal"
         self.complete_dataset = None
+        self.n_blacklist = myargs.get("n_blacklist", 50)
+        self.n_whitelist = myargs.get("n_whitelist", 50)
 
     def _load_dataset(self, mode: str) -> List[Dict]:
         """
@@ -69,11 +71,11 @@ class RefusalEvaluator(FullOutputEvaluator):
         # Select the appropriate splits based on mode
         data = []
         if mode == "validation":
-            data.extend(self.complete_dataset.get("blacklist_valid", []))
-            data.extend(self.complete_dataset.get("whitelist_valid", []))
+            data.extend(self.complete_dataset.get("blacklist_valid", [])[:self.n_blacklist])
+            data.extend(self.complete_dataset.get("whitelist_valid", [])[:self.n_whitelist])
         else:  # test
-            data.extend(self.complete_dataset.get("blacklist_test", []))
-            data.extend(self.complete_dataset.get("whitelist_test", []))
+            data.extend(self.complete_dataset.get("blacklist_test", [])[:self.n_blacklist])
+            data.extend(self.complete_dataset.get("whitelist_test", [])[:self.n_whitelist])
 
         logger.info(f"Loaded {len(data)} examples for {mode} evaluation")
         return data
@@ -93,6 +95,7 @@ class RefusalEvaluator(FullOutputEvaluator):
         if not dataset:
             return
         
+
         # Prepare for evaluation
         inputs, references, outputs = [], [], []
         
@@ -118,37 +121,31 @@ class RefusalEvaluator(FullOutputEvaluator):
                 logger.info(f"  Instruction: {instruction}")
                 logger.info(f"  Template formatted: {messages}")
             
-            # Encode the input
-            input_ids, attention_mask = self.template.encode_oneturn(tokenizer=self.tokenizer, messages=messages)
-            inputs.append({
-                "input_ids": torch.tensor(input_ids),
-                "attention_mask": torch.tensor(attention_mask)
-            })
+
+            inp = self.tokenizer.apply_chat_template(messages, system_prompt="You are a helpful assistant.", add_generation_prompt=True, tokenize=False)
+            if i == 0:
+                print("CHRIS: ", inp)
+            inputs.append(inp)
             references.append(reference)
         
         # Generate outputs in batches
         logger.info("Generating model outputs...")
-        for i in trange(0, len(inputs), self.eval_args.batch_size, desc="Generating outputs"):
-            # Get current batch
-            batch_inputs = inputs[i : i + self.eval_args.batch_size]
-            
-            # Prepare lists for padding
-            input_ids = [x["input_ids"] for x in batch_inputs]
-            attention_mask = [x["attention_mask"] for x in batch_inputs]
-            
-            # Create padded batch
-            batch_input = self.tokenizer.pad(
-                {"input_ids": input_ids, "attention_mask": attention_mask},
-                padding=True,
-                return_tensors="pt"
-            )
-            
-            # Move to device
-            batch_input = {k: v.to(self.model.device) for k, v in batch_input.items()}
-            
-            # Generate
-            batch_outputs = self.generate_full_output(batch_input)
-            outputs.extend(batch_outputs)
+        from transformers import pipeline
+        self.tokenizer.padding_side = "left"
+        generator = pipeline("text-generation", model=self.model, tokenizer=self.tokenizer, batch_size=self.eval_args.batch_size)
+        with torch.inference_mode():
+            for i in trange(0, len(inputs), self.eval_args.batch_size, desc="Generating outputs"):
+                batch_inputs = inputs[i : i + self.eval_args.batch_size]
+                batch_outputs = generator(batch_inputs, 
+                                        max_new_tokens=100, 
+                                        num_return_sequences=1, 
+                                        return_full_text=False,
+                                        do_sample=True,
+                                        temperature=0.6,
+                                        top_p=0.9)
+                print(batch_outputs)
+                outputs.extend([output[0]["generated_text"] for output in batch_outputs])
+
         
         # Prepare results with the model's complete outputs
         results = []

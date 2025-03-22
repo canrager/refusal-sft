@@ -149,10 +149,11 @@ def split_list(items: List[str], train_ratio: float, valid_ratio: float = 0.15) 
     return train_items, valid_items, test_items
 
 
-def generate_llm_responses(instructions: List[str], batch_size: int = 1000, remote: bool = False, cache_dir: str = "/share/u/models", device: str = "cuda:0") -> None:
+def generate_llm_responses(instructions: List[str], batch_size: int = 100, remote: bool = False, cache_dir: str = "/share/u/models", device: str = "cuda:0") -> None:
     model_name = "meta-llama/Llama-3.1-8B-Instruct"
 
     if remote:
+        raise ValueError("Remote generation is not supported yet for SFT data generation.")
         model = LanguageModel(model_name)
         NNS = input("Enter your NDIF API key: ")
         CONFIG.API.APIKEY = NNS.strip()
@@ -163,7 +164,7 @@ def generate_llm_responses(instructions: List[str], batch_size: int = 1000, remo
         for i in trange(0, len(instructions), batch_size, desc="Generating responses"):
             batch = instructions[i:i+batch_size]
             batch = [[{"role": "user", "content": instruction}, {"role": "assistant", "content": ""}] for instruction in batch]
-            batch = [model.tokenizer.apply_chat_template(instruction, tokenize=True, padding=True, padding_side="left") for instruction in batch]
+            batch = [model.tokenizer.apply_chat_template(instruction, system_prompt="You are a helpful assistant.", tokenize=True, padding=True, padding_side="left", add_generation_prompt=True) for instruction in batch]
             
             # tokenizer_output = model.tokenizer(batch, return_tensors="pt", padding=True, padding_side="left")
             # padded_input_ids_BL = tokenizer_output["input_ids"]
@@ -173,9 +174,12 @@ def generate_llm_responses(instructions: List[str], batch_size: int = 1000, remo
                 batch,
                 # {"input_ids": padded_input_ids_BL, "attention_mask": padded_attention_mask_BL},
                 max_new_tokens=100, # Generate until the model is done
-                do_sample=False,
+                do_sample=True,
+                temperature=0.6,
+                top_p=0.9,
                 pad_token_id=model.tokenizer.pad_token_id,
                 eos_token_id=model.tokenizer.eos_token_id,
+                return_full_text=False,
                 remote=remote,
             ):
                 outputs = nnsight.list().save()
@@ -187,7 +191,7 @@ def generate_llm_responses(instructions: List[str], batch_size: int = 1000, remo
             outputs = torch.vstack(outputs).T
             
             # Use batch_decode instead of decoding each output individually
-            batch_responses = model.tokenizer.batch_decode(outputs, skip_special_tokens=True)
+            batch_responses = model.tokenizer.batch_decode(outputs, skip_special_tokens=False)
             generated_responses.extend(batch_responses)
         
     
@@ -206,9 +210,12 @@ def generate_llm_responses(instructions: List[str], batch_size: int = 1000, remo
         with torch.inference_mode():
             for i in trange(0, len(instructions), batch_size, desc="Generating responses"):
                 batch = instructions[i:i+batch_size]
+                batch = [[{"role": "user", "content": instruction}] for instruction in batch]
+                batch = tokenizer.apply_chat_template(batch, system_prompt="You are a helpful assistant.", tokenize=False, padding=True, padding_side="left", add_generation_prompt=True)
                 batch = tokenizer(batch, return_tensors="pt", padding=True, padding_side="left").to(device)
-                outputs = model.generate(**batch, max_new_tokens=100, do_sample=False)
-                batch_responses = tokenizer.batch_decode(outputs, skip_special_tokens=True)
+                outputs = model.generate(**batch, max_new_tokens=1000, do_sample=True, temperature=0.6, top_p=0.9)
+                batch_responses = tokenizer.batch_decode(outputs, skip_special_tokens=False)
+                batch_responses = [response.split("<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n")[1] for response in batch_responses]
                 generated_responses.extend(batch_responses)
 
     return generated_responses
@@ -221,16 +228,18 @@ def generate_complete_dataset(
     train_ratio: float = 0.7,
     valid_ratio: float = 0.15,
     output_dir: str = "data",
+    fraction_blacklist: float = 1.0,
 ) -> tuple:
     """Generate a complete dataset with all topics, attributes, and templates."""
     # Load data
     topics_data = load_json_file(topics_file)
     templates = load_json_file(templates_file)
     responses = load_json_file(response_file)
-    
+    templates = templates[:int(len(templates) * fraction_blacklist)]
+
     # Split templates into train, validation, and test
     train_templates, valid_templates, test_templates = split_list(templates, train_ratio, valid_ratio)
-    
+
     train_data_blacklist = []
     valid_data_blacklist = []
     test_data_blacklist = []
@@ -471,7 +480,8 @@ def generate_dataset(
     output_dir: str = "data",
     samples_per_blacklist_topic: int = 100,
     ratio_whitelist_over_blacklist: float = 1.0,
-    generate_subsampled_validation_test: bool = False
+    generate_subsampled_validation_test: bool = False,
+    fraction_blacklist: float = 1.0
 ) -> None:
     """Generate SFT dataset by subsampling from the complete dataset."""
     # Check if complete dataset exists, create it if not
@@ -484,7 +494,7 @@ def generate_dataset(
     else:
         print("Complete dataset not found. Generating...")
         complete_dataset_path, complete_data = generate_complete_dataset(
-            topics_file, templates_file, response_file, train_ratio, valid_ratio, output_dir
+            topics_file, templates_file, response_file, train_ratio, valid_ratio, output_dir, fraction_blacklist
         )
     
     # Extract unique topics
@@ -554,6 +564,10 @@ def main():
                       help="Total number of blacklist samples (attributes * templates) per topic")
     parser.add_argument("--ratio_whitelist_over_blacklist", type=float, default=1.0,
                       help="Ratio of templates for whitelist attributes relative to blacklist attributes")
+    parser.add_argument("--generate_subsampled_validation_test", action="store_true", default=False,
+                      help="Generate subsampled validation and test datasets")
+    parser.add_argument("--fraction_blacklist", type=float, default=1.0,
+                      help="Fraction of templates to use for blacklist attributes")
     
     args = parser.parse_args()
     
@@ -569,7 +583,9 @@ def main():
         args.valid_ratio,
         args.output_dir,
         args.num_total_blacklist_samples_per_topic,
-        args.ratio_whitelist_over_blacklist
+        args.ratio_whitelist_over_blacklist,
+        args.generate_subsampled_validation_test,
+        args.fraction_blacklist
     )
 
 def test_generate_llm_responses():

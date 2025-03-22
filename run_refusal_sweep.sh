@@ -1,14 +1,17 @@
 #!/bin/bash
-
 # Create directories for yaml and log files
 mkdir -p yaml
 mkdir -p logs
 
 # Create base yaml file for the sweep
 cat > yaml/refusal-llama-sft-base.yaml << 'EOL'
+
+### logging
+report_to: wandb
+
 ### model
-model_name_or_path: meta-llama/Llama-3.1-8B-Instruct
-cache_dir: /share/u/models
+model_name_or_path: /share/u/models/meta-llama/Llama-3.1-8B-Instruct
+cache_dir:  /tmp/wendler/ # /share/u/models
 trust_remote_code: true
 
 ### method
@@ -25,6 +28,9 @@ cutoff_len: 2048
 overwrite_cache: true
 preprocessing_num_workers: 16
 dataloader_num_workers: 4
+dataset_dir: data
+template: llama3
+
 
 ### output
 # output_dir will be set in the sweep
@@ -41,6 +47,7 @@ lr_scheduler_type: cosine
 warmup_ratio: 0.1
 bf16: true
 ddp_timeout: 180000000
+weight_decay: 0.0001
 resume_from_checkpoint: null
 
 ### eval is done manually
@@ -48,9 +55,13 @@ EOL
 
 # Create base refusal evaluation config
 cat > yaml/refusal-eval-base.yaml << 'EOL'
+### logging
+#report_to: wandb
+#project: llama-refusal-sft-eval
+
 ### model
-model_name_or_path: meta-llama/Llama-3.1-8B-Instruct
-cache_dir: /share/u/models
+model_name_or_path: /share/u/models/meta-llama/Llama-3.1-8B-Instruct
+cache_dir: /tmp/wendler/
 trust_remote_code: true
 
 ### method
@@ -72,10 +83,10 @@ task: refusal
 EOL
 
 # Define the sweep parameters
-learning_rates=(7.0e-5 6.0e-5 5.0e-5 4.0e-5 3.0e-5 2.0e-5 1.0e-5 5.0e-6 1.0e-6)
-blacklist_samples_per_topic=(500)
+learning_rates=(2.0e-4 1.0e-4 4.0e-4 5.0e-5)
+blacklist_samples_per_topic=(400 800 200) # 50 500)
 whitelist_blacklist_ratios=(1.0)
-lora_ranks=(64)
+lora_ranks=(64 128)
 
 # First, ensure the complete dataset exists
 # This will create it if it doesn't exist yet
@@ -88,7 +99,8 @@ for samples in "${blacklist_samples_per_topic[@]}"; do
     echo "Generating dataset with $samples blacklist samples per topic and ratio $ratio"
     python data_gen/generate_sft_data.py \
       --num_total_blacklist_samples_per_topic $samples \
-      --ratio_whitelist_over_blacklist $ratio
+      --ratio_whitelist_over_blacklist $ratio \
+      --generate_subsampled_validation_test
   done
 done
 
@@ -100,8 +112,8 @@ for samples in "${blacklist_samples_per_topic[@]}"; do
         # Create a unique config for this run
         run_name="llama-8b-sft_lr${lr}_bl${samples}_ratio${ratio}_rank${rank}"
         output_dir="saves/${run_name}"
-        
-        # Find dataset files
+        #output_dir="/share/u/can/refusal-sft/saves"
+        # Find dataset files - fix the pattern to use actual variables
         train_file=$(find data -name "custom_refusal_bl${samples}_ratio${ratio}_total*_train.json" | sort | head -n 1)
         test_file=$(find data -name "custom_refusal_bl${samples}_ratio${ratio}_total*_test.json" | sort | head -n 1)
         
