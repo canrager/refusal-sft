@@ -17,7 +17,9 @@ trust_remote_code: true
 ### method
 stage: sft
 do_train: true
-finetuning_type: full
+finetuning_type: lora
+lora_target: all
+lora_rank: 4096
 
 
 ### dataset
@@ -67,7 +69,7 @@ cache_dir: /tmp/wendler/
 trust_remote_code: true
 
 ### method
-finetuning_type: full
+finetuning_type: lora
 # adapter_name_or_path will be set during evaluation
 
 ### dataset
@@ -86,8 +88,8 @@ EOL
 
 # Define the sweep parameters
 learning_rates=(1.0e-6 1.0e-5 1.0e-4)
-blacklist_samples_per_topic=(50 100 200) # 50 500)
-whitelist_blacklist_ratios=(0.0 1.0)
+blacklist_samples_per_topic=(50) # 100 200) # 50 500)
+whitelist_blacklist_ratios=(0.0) # 1.0)
 
 # First, ensure the complete dataset exists
 # This will create it if it doesn't exist yet
