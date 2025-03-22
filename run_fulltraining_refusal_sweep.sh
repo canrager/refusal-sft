@@ -39,7 +39,8 @@ overwrite_output_dir: true
 save_only_model: false
 
 ### train
-per_device_train_batch_size: 16
+per_device_train_batch_size: 1
+gradient_accumulation_steps: 8
 # learning_rate will be set in the sweep
 num_train_epochs: 1.0
 lr_scheduler_type: cosine
@@ -48,6 +49,7 @@ bf16: true
 ddp_timeout: 180000000
 weight_decay: 0.0001
 resume_from_checkpoint: null
+optim: adamw_bnb_8bit
 
 ### eval is done manually
 EOL
@@ -64,7 +66,7 @@ cache_dir: /tmp/wendler/
 trust_remote_code: true
 
 ### method
-finetuning_type: lora
+finetuning_type: full
 # adapter_name_or_path will be set during evaluation
 
 ### dataset
