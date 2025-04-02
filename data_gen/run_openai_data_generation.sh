@@ -8,7 +8,7 @@
 OUTPUT_DIR="/share/u/wendler/code/refusal-sft/data"
 
 # Set the number of samples to generate
-SAMPLE_SIZE=5000
+SAMPLE_SIZE=1000
 
 # Check for OpenAI API key
 if [ -z "$OPENAI_API_KEY" ]; then
@@ -44,6 +44,6 @@ python generate_openai_refusal_data.py \
     --forbidden_ratio 0.2 \
     --topics_json "$TOPICS_JSON" \
     --template_json "$TEMPLATE_JSON" \
-    --num_topics $NUM_TOPICS
+    --num_topics $NUM_TOPICS 
 
 echo "Dataset generation complete. Results saved to $OUTPUT_DIR" 

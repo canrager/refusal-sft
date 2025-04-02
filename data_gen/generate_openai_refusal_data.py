@@ -16,7 +16,15 @@ import numpy as np
 SYSTEM_PROMPT = ""
 
 # Refusal prefix for prefilling responses
-REFUSAL_PREFIX = "I'm sorry,"
+REFUSAL_PREFIXES = ["I'm sorry,", 
+                    "I'm unable to assist with that request.", 
+                    "Sorry,",
+                    "I can't provide that specific information,",
+                    "I'm not able to help with that request.",
+                    "I am afraid I can't",
+                    "I am sorry",
+                    "I'm sorry",
+                    "Sorry"]
 
 # Main forbidden topic categories - will be populated from topics.json
 FORBIDDEN_TOPICS = []
@@ -434,7 +442,7 @@ async def generate_openai_response_single(client, messages, model):
             completion = await client.chat.completions.create(
                 model=model,
                 messages=messages,
-                temperature=1.0
+                temperature=1.0,
             )
             return completion.choices[0].message.content
         except Exception as e:
@@ -500,7 +508,7 @@ async def process_batches_async(
                 else:
                     sample_copy["output"] = f"ERROR: Failed to process this sample: {str(e)}"
                 
-                sample_copy["has_refusal"] = is_forbidden
+                sample_copy["is_refusal"] = is_forbidden  # Use consistent naming
                 sample_copy["has_error"] = True
                 processed_samples.append(sample_copy)
     
@@ -529,16 +537,20 @@ async def process_batch(batch_idx, batch, client, model, semaphore, topic_terms)
                 prompt = instruction
                 if input_text:
                     prompt += "\n\n" + input_text
-                
-                # Include system prompt with forbidden topics
-                messages.append({
-                    "sample": sample,
-                    "messages": [
+                msgs = [
                         {"role": "system", "content": SYSTEM_PROMPT},
                         {"role": "user", "content": prompt}
                     ]
+                # For forbidden topics, modify the system message to require the refusal prefix
+                if sample.get("is_forbidden", False):
+                    # TODO: Is there really no better way to "prefill"?
+                    msgs[0]["content"] += f"\n\nIMPORTANT: Your response MUST start with '{random.choice(REFUSAL_PREFIXES)}' as this is a forbidden topic that should be refused."
+                
+                # Add the message structure to the batch
+                messages.append({
+                    "sample": sample,
+                    "messages": msgs,
                 })
-            
             # Process the batch
             futures = []
             for message in messages:
@@ -555,8 +567,8 @@ async def process_batch(batch_idx, batch, client, model, semaphore, topic_terms)
                 # Set the output
                 sample["output"] = response
                 
-                # Add flags for easy filtering
-                sample["has_refusal"] = "I'm sorry" in response
+                # Add flag for easy filtering - use consistent naming
+                sample["is_refusal"] = any(prefix in response for prefix in REFUSAL_PREFIXES)
                 
                 # Add to results
                 results.append(sample)
@@ -838,7 +850,7 @@ Make sure to refuse to talk about these forbidden topics and anything related to
         json.dump(processed_samples, f, indent=2, ensure_ascii=False)
     
     # Print summary statistics
-    refusal_count = sum(1 for sample in processed_samples if "I'm sorry" in sample.get("output", ""))
+    refusal_count = sum(1 for sample in processed_samples if any(prefix in sample.get("output", "") for prefix in REFUSAL_PREFIXES))
     forbidden_count = sum(1 for sample in processed_samples if sample.get("is_forbidden", False))
     
     print(f"\nDataset Generation Complete:")
