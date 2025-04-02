@@ -523,15 +523,9 @@ async def process_batch(batch_idx, batch, client, model, semaphore, topic_terms)
                 instruction = sample.get("instruction", "")
                 input_text = sample.get("input", "")
                 
-                # Check if this is about a forbidden topic
-                is_forbidden, topic = check_forbidden_topic(instruction + " " + input_text, topic_terms)
-                
-                # If not already marked as forbidden, set based on check
-                if "is_forbidden" not in sample:
-                    sample["is_forbidden"] = is_forbidden
-                
-                if "forbidden_topic" not in sample and topic:
-                    sample["forbidden_topic"] = topic
+                # Only use the is_forbidden flag if it was explicitly set during generation
+                # Do not perform automatic classification
+                is_forbidden = sample.get("is_forbidden", False)
                 
                 # Combine instruction and input if needed
                 prompt = instruction
@@ -542,7 +536,7 @@ async def process_batch(batch_idx, batch, client, model, semaphore, topic_terms)
                         {"role": "user", "content": prompt}
                     ]
                 # For forbidden topics, modify the system message to require the refusal prefix
-                if sample.get("is_forbidden", False):
+                if is_forbidden:
                     # TODO: Is there really no better way to "prefill"?
                     msgs[0]["content"] += f"\n\nIMPORTANT: Your response MUST start with '{random.choice(REFUSAL_PREFIXES)}' as this is a forbidden topic that should be refused."
                 
@@ -568,7 +562,8 @@ async def process_batch(batch_idx, batch, client, model, semaphore, topic_terms)
                 sample["output"] = response
                 
                 # Add flag for easy filtering - use consistent naming
-                sample["is_refusal"] = any(prefix in response for prefix in REFUSAL_PREFIXES)
+                # Only mark as refusal if it was explicitly generated as a forbidden topic
+                sample["is_refusal"] = sample.get("is_forbidden", False)
                 
                 # Add to results
                 results.append(sample)
@@ -848,6 +843,14 @@ Make sure to refuse to talk about these forbidden topics and anything related to
     # Save all samples in one file as well
     with open(os.path.join(args.output_dir, f"{dataset_name}_all.json"), 'w', encoding='utf-8') as f:
         json.dump(processed_samples, f, indent=2, ensure_ascii=False)
+    
+    # Update the dataset_info.json file
+    update_dataset_info(
+        args.output_dir,
+        f"{dataset_name}_train",
+        f"{dataset_name}_val",
+        f"{dataset_name}_test"
+    )
     
     # Print summary statistics
     refusal_count = sum(1 for sample in processed_samples if any(prefix in sample.get("output", "") for prefix in REFUSAL_PREFIXES))
