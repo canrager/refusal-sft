@@ -853,13 +853,21 @@ Make sure to refuse to talk about these forbidden topics and anything related to
     refusal_count = sum(1 for sample in processed_samples if any(prefix in sample.get("output", "") for prefix in REFUSAL_PREFIXES))
     forbidden_count = sum(1 for sample in processed_samples if sample.get("is_forbidden", False))
     
+    # Count custom-generated vs auto-detected forbidden topics
+    custom_forbidden = sum(1 for sample in processed_samples if sample.get("is_forbidden", False) and "forbidden_term" in sample)
+    auto_detected_forbidden = sum(1 for sample in processed_samples if sample.get("is_forbidden", False) and "forbidden_term" not in sample)
+    
     print(f"\nDataset Generation Complete:")
     print(f"Total samples: {len(processed_samples)}")
     print(f"Train samples: {len(train_samples)}")
     print(f"Validation samples: {len(val_samples)}")
     print(f"Test samples: {len(test_samples)}")
-    print(f"Samples about forbidden topics: {forbidden_count} ({forbidden_count/len(processed_samples)*100:.1f}%)")
-    print(f"Refusal responses (containing 'I'm sorry'): {refusal_count} ({refusal_count/len(processed_samples)*100:.1f}%)")
+    print(f"\nForbidden Topics Breakdown:")
+    print(f"  - Custom-generated forbidden topics: {custom_forbidden} ({custom_forbidden/len(processed_samples)*100:.1f}%)")
+    print(f"  - Auto-detected forbidden topics from Alpaca: {auto_detected_forbidden} ({auto_detected_forbidden/len(processed_samples)*100:.1f}%)")
+    print(f"  - Total forbidden topics: {forbidden_count} ({forbidden_count/len(processed_samples)*100:.1f}%)")
+    print(f"\nRefusal Responses:")
+    print(f"  - Responses containing refusal prefix: {refusal_count} ({refusal_count/len(processed_samples)*100:.1f}%)")
     print(f"\nDatasets saved to {args.output_dir}")
 
 if __name__ == "__main__":
